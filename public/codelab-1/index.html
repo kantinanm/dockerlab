@@ -1,0 +1,168 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Codelab 1 - ปฐมบท Software Container</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="codelab-1-software-container"
+                  title="Codelab 1 - ปฐมบท Software Container"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="เทคโนโลยีซอฟต์แวร์คอนเทนเนอร์" duration="4">
+        <p>แนวความคิดของเทคโนโลยีซอฟต์แวร์คอนเทนเนอร์นั้น  เกิดขึ้นครั้งแรกในปี  ค.ศ. 2000 ใน ระบบปฏิบัติการยูนิกซ์ FreeBSD jail  โดยได้พัฒนาขึ้นเพื่อให้สามารถทำงานในลักษณะของการแยกส่วนและกำหนดสภาพแวดล้อมของระบบต่างๆภายในเครื่องเดียวกันได้  โดยระบบต่างๆสามารถใช้งาน (Kernel) และเข้าถึงทรัพยากรภายในเครื่องได้ </p>
+<p class="image-container"><img style="width: 318.00px" src="img\49f402c7d22bc41e.jpeg"></p>
+<p>        ต่อมาในปี ค.ศ. 2001 ในระบบปฏิบัติการลีนุกซ์ได้เริ่มมีแนวคิดที่จะพัฒนาสภาพแวดล้อมแบบแยกส่วน (Kernel-level Isolation) ขึ้นภายใต้โครงการที่ชื่อว่า VServer ซึ่งผลลัพธ์ของโครงการนี้ทำให้แนวคิดเทคโนโลยีการจำลองในระบบคอมพิวเตอร์เริ่มเข้ามีบทบาทในระบบปฏิบัติการลีนุกซ์เป็นครั้งแรก  จนมาในปี ค.ศ. 2008 ระบบปฏิบัติการลีนุกซ์ ได้ผนวก Linux Containers (LXC)  เข้ากับส่วน (Kernel) ของระบบปฏิบัติการ  โดยมีจุดประสงค์เพื่อให้สามารถสร้างสภาพแวดล้อมเฉพาะให้กับซอฟต์แวร์หรือระบบอื่นๆทำงานได้โดยไม่กวนกับซอฟต์แวร์หรือระบบอื่นภายในระบบปฏิบัติการเดียวกัน  ในระยะแรกยังไม่ได้รับความนิยมเนื่องจากใช้งานยากและไม่มีระบบจัดการ  แต่<em>ต่อมาในปี ค.ศ. 2013  บริษัท Docker, Inc. ได้พัฒนาส่วนที่ใช้ในการจัดการคอนเทนเนอร์ที่สะดวกต่อการใช้งานจนกระทั่งได้รับความนิยมใช้งานอย่างแพร่หลาย  </em></p>
+<h2 is-upgraded><strong>Docker คืออะไร</strong></h2>
+<p>Docker คือซอฟต์แวร์คอนเทนเนอร์ประเภทหนึ่งที่มีระบบจัดการจัดที่มีประสิทธิภาพ มีกลุ่มผู้ใช้งาน(Community) จำนวนมาก  มี Engine ในการรองรับการติดตั้งแอพพลิเคชั่นในสถาปัตยกรรมแบบ Container    แอพพลิเคชั่นที่ถูกติดตั้งจะสามารถแยกออกจาก host system ได้อิสระและสามารถทำให้แอพพลิเคชั่นของเรามีความสามารถแบบ porttable (run หรือ executable ) ได้ทุกๆ platform </p>
+<h3 is-upgraded>องค์ประกอบที่สำคัญ ของ Docker</h3>
+<ol type="1" start="1">
+<li><strong>Docker client</strong> คือชุดคำสั่งหรือโปรแกรมที่ใช้จัดการ images ผ่าน Commandline </li>
+<li><strong>Docker deamon </strong>หรือ  Docker&#39;s engine เปรียบเสมือนกลไกที่ช่วยในการติดตั้งแอพพลิเคชั่นแบบซอฟต์แวร์คอนเทนเนอร์ </li>
+<li><strong>Docker Hub</strong> หรือ Docker Registry คือ Community ของกลุ่มผู้ใช้งานสำหรับเก็บ images ของ Docker แบบสาธารณะ</li>
+</ol>
+<h3 is-upgraded>จุดเด่นที่นิยมนำมาใช้งาน</h3>
+<ol type="1" start="1">
+<li>Docker คือเครื่องมือที่ทำงานได้แบบ cross-platform มีในทุกระบบปฏิบัติการที่ได้รับความนิยม อธิ Windows , Linux  หรือ macOS ตลอดจนผู้ให้บริการผ่านระบบ cloud   เช่น AWS และ Azure</li>
+<li>มีความซับซ้อนและสิ้นเปลืองทรัพยากรน้อยกว่าการทำงานแบบเทคโนโลยีคอมพิวเตอร์เสมือนหรือ Virtual Machine</li>
+<li>Docker มีระบบการจัดเก็บ Registry ทั้งแบบ Public และ Private ทำให้สามารถเคลื่อนย้ายหรือติดตั้ง Container ได้สะดวก และรวดเร็วกว่ามาก</li>
+<li>มี Official image จำนวนมากให้เลือกใช้  นักพัฒนาและ Developer สามารถ Custom images ได้ตามความของการของเทคโนโลยีที่ใช้</li>
+<li>ในกระบวนการพัฒนาซอต์ฟแวร์  จะช่วยทำให้ Developer มั่นใจได้ว่า Source Code ที่ถูกเขียนและ environment ต่างๆในเครื่องที่ใช้พัฒนานั้น  จะสามารถทำงานได้เมื่อถูกนำไปติดตั้งที่ Production Server</li>
+</ol>
+<h3 is-upgraded>Docker hub</h3>
+<p>Docker Hub คือ พื้นที่สำหรับจัดเก็บ images แบบสาธารณะในการให้บริการผ่าน Cloud หรือเรียกว่า  Docker registry ปัจจุบันมีจำนวน Images ที่ถูกพัฒนาโดยบริษัทชั้นนำในแวดวง IT และผู้ใช้งานมากกว่า 2 ล้าน images</p>
+<h4 is-upgraded>การลงทะเบียน Docker Hub ให้เข้าไปที่ <a href="https://hub.docker.com/" target="_blank">https:/​/​hub.​docker.​com</a>​ จากนั้น ระบุ docker id, email และ password ที่ต้องการ  แล้ว Click ที่ปุ่ม Sign up for Docker</h4>
+<p class="image-container"><img style="width: 502.00px" src="img\2bf3c61bb8eb994d.jpeg"></p>
+<p>เมื่อ docker account ถูก create ผู้ใช้งานจะสามารถ Sign-in ที่เว็บไซต์และสามารถ Upload images เพื่อเก็บไว้ใน Docker Hub ได้ทันที หรือสามารถดาวน์โหลด Docker Desktop เพื่อใช้จัดการ images ได้</p>
+<p>หากต้องการตรวจสอบดูว่าใน Docker Hub นั้นมี images ที่น่าสนใจนั้น จะทำได้ที่เมนู Explore</p>
+<p class="image-container"><img style="width: 624.00px" src="img\58192816aa26f57f.jpeg"></p>
+<p>        Images ที่ได้รับความนิยมจะแสดง ตามยอดการดาวน์โหลด ผู้ใช้งานสามารถเลือก Filter ตามเงื่อนไขที่ต้องการได้ </p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การติดตั้ง Docker ในระบบปฏิบัติการ Window 10" duration="5">
+        <h2 is-upgraded>System Requirement</h2>
+<ul>
+<li>Windows 10 64 bit และมีความจุแรมอย่างน้อย 4 GB</li>
+<li>ฟังก์ชั่น Virtualization ในเครื่องจะต้องถูกเปิดใช้งาน เช่น VT-x/amd-v , Hyper-V </li>
+</ul>
+<aside class="special"><p><strong>Note:</strong> เครื่องที่ใช้ติดตั้งควรจะเหลือพื้นที่่ว่างอย่างน้อย 2Gb ในการเก็บ images </p>
+</aside>
+<h2 is-upgraded>ดาวน์โหลดโปรแกรมติดตั้ง </h2>
+<p>ผู้ใช้งานจะต้องทำการ Download โปรแกรมและตัวติดตั้งดังนี้</p>
+<ol type="1" start="1">
+<li><a href="https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe" target="_blank">Docker CE</a> </li>
+<li><a href="https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" target="_blank">Windows Subsystem for Linux</a></li>
+</ol>
+<h2 is-upgraded>ติดตั้ง Docker CE</h2>
+<p>        หลังจาก Download ตัวติดตั้งมาแล้วให้ ทำการ Double Click ไฟล์ Docker Desktop Installer.exe รอสักครู่..</p>
+<p class="image-container"><img style="width: 442.52px" src="img\774e03cd8170ccc3.jpeg"></p>
+<p>จากนั้นให้เลือก [/] ทั้ง 2 Option ตามรูป แล้วจึงกดปุ่ม Ok</p>
+<p class="image-container"><img style="width: 443.40px" src="img\756dcbb531909ee2.jpeg"></p>
+<p>รอสักครู่จนติดตั้งเสร็จ</p>
+<p class="image-container"><img style="width: 454.50px" src="img\83ba2ff6c8602abd.jpeg"></p>
+<p>เมื่อติดต้ังเสร็จแล้วโปรแกรมจะขึ้นข้อความดังรูปด้านล่าง เพื่อแจ้งเตือนว่าให้ติดตั้ง Windows Subsystem for Linux Version 2 (WSL 2) <strong>ให้เพิกเฉยต่อข้อความแจ้งเตือนดังกล่าว</strong> (ยังไม่ต้องกดปุ่ม Restart หรือ Cancel) <strong>จนกว่าจะติดตั้ง Windows Subsystem for Linux 2 (WSL 2) เรียบร้อย</strong></p>
+<p class="image-container"><img style="width: 579.04px" src="img\f5a7e38aff137a8b.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การติดตั้ง Windows Subsystem for Linux" duration="5">
+        <p>Windows Subsystem for Linux (WSL) เป็นฟีเจอร์ของระบบปฏิบัติการ Windows ที่ทำให้สามารถใช้คำสั่งที่ทำงานในฝั่ง Linux ได้หรือพูดง่ายๆ ว่าเราสามารถใช้งาน Linux บน Windows ได้แบบ Native โดยที่ไม่ต้องลง Virtual Machine หรือ Hyper-V ใดๆ โดยที่ใน WSL Version 2 นี้  จะสามารถ Mount ระบบไฟล์จากดิสก์ที่เป็นลินุกซ์ในเครื่องเดียวกันได้ โดยไม่ต้องคอยแปลง format</p>
+<aside class="special"><p><strong>Tip: </strong></p>
+<ul>
+<li>Window 10 ที่ Major Version <strong>1903</strong> และ <strong>1909</strong>  ให้พิจารณา Major version (Build) มากกว่า <strong>18363</strong> หรือ Minor Version ที่สูงกว่า<strong> 1049,</strong> (18362<strong>.1049</strong>) จึงจะสามารถติดตั้งและใช้งาน WSL 2 ได้    </li>
+<li>Window 10 ที่ Major Version <strong>2004</strong> ให้พิจารณา Major version(Build) มากกว่า <strong>19041</strong> จึงจะสามารถติดตั้งและใช้งาน WSL 2 ได้ </li>
+</ul>
+</aside>
+<h3 is-upgraded><strong>วิธีการตรวจสอบ Version ของ Window</strong></h3>
+<p>ผู้ใช้งานต้องตรวจสอบ Version ของ Windows ก่อน ซึ่งทำได้โดยเข้าไปที่ Command Promt (window logo key + R) จากนั้นพิมพ์ &#34;<code>winver</code>&#34;</p>
+<p class="image-container"><img style="width: 384.74px" src="img\83e1cc76936c6cb9.jpeg"></p>
+<p class="image-container"><img style="width: 330.85px" src="img\a52e359426916ff3.png"></p>
+<h3 is-upgraded><strong>การติดตั้ง WSL สำหรับ ระบบปฏิบัติการ Windows 10 ที่ต่ำกว่า 1903.18362.1049</strong></h3>
+<p>Step 1. เปิด PowerShell ขึ้นมา โดยเลือกแบบ Open as an Administrator</p>
+<p class="image-container"><img style="width: 407.19px" src="img\72bf2997cb779e2f.jpeg"></p>
+<p>Step 2. จากนั้นพิมพ์คำสั่ง หรือคัดลอกคำสั่งนี้ ไปวางที่ PowerShell แล้วกด Enter เพื่อเริ่มดาวน์โหลดและติดตั้ง</p>
+<pre><code>dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart</code></pre>
+<p>Step 3.  จากนั้นพิมพ์คำสั่ง หรือคัดลอกคำสั่งนี้ ไปวางที่ PowerShell  Enter เพื่อเปิดฟีเจอร์ Virtual Machine feature</p>
+<pre><code>dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all </code></pre>
+<p>Step 5. เมื่อติดตั้งเสร็จ ให้ทำการ Restart </p>
+<p>Step 6. ทำการทดสอบ WSL ว่าสามารถใช้งานได้หรือไม่ โดยการพิมพ์คำสั่งใน PowerShell </p>
+<pre><code>wsl --list --verbose</code></pre>
+<h3 is-upgraded><strong>วิธี Update</strong> <strong>WSL ให้เป็น Version 2 </strong></h3>
+<p>Step 1. ดาวน์โหลด Linux kernel update package ให้เหมาะสมตามสถาปัตยกรรม (x64 หรือ ARM64) เครื่องของเรา (เลือกโหลด ตามความเหมาะสม)</p>
+<ul>
+<li><a href="https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi" target="_blank">x64 system Linux kernel</a></li>
+<li><a href="https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_arm64.msi" target="_blank">ARM64 system Linux kernel</a></li>
+</ul>
+<aside class="special"><p><strong>วิธีการตรวจสอบสถาปัตยกรรมของเครื่อง : </strong>ให้ใช้คำสั่งนี้ &#34;systeminfo | find &#34;System Type&#34; ใน Command Prompt (window logo key + R ) </p>
+</aside>
+<p class="image-container"><img style="width: 642.47px" src="img\1f6dc0fe84b3dafc.jpeg"></p>
+<p>Step 2. Double Click ไฟล์ที่ได้โหลดมา แล้วกด RUN</p>
+<p class="image-container"><img style="width: 460.50px" src="img\2aab644dbfca3c86.jpeg"></p>
+<p class="image-container"><img style="width: 366.00px" src="img\b3d9ba43d90054f.jpeg"></p>
+<p>Step 3. Click ปุ่ม Next แล้วรอการติดตั้ง</p>
+<p class="image-container"><img style="width: 369.90px" src="img\7ff88e86ea79dcd6.jpeg"></p>
+<p>Step 4. เมื่อติดตั้ง Update เสร็จแล้วให้ทำการ Restart (เป็นการติดตั้ง Docker CE ต่อให้สำเร็จ หลังจากที่รอการ Update WSL ให้เป็น Version 2 )</p>
+<p>Step 5. เปิด PowerShell ขึ้นมา โดยเลือกแบบ Open as an Administrator จากนั้นให้พิมพ์คำสั่งด้านล่าง เพื่อการกำหนดค่า Default ของ WSL ให้ เป็น Version 2</p>
+<pre><code>wsl --set-default-version 2</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="เริ่มทำงานกับ Docker" duration="1">
+        <p>หลังจากได้มีการติดตั้ง Docker CE for windows และติดตั้ง WSL พร้อม Update V2 เรียบร้อยแล้ว เมื่อได้ทำการ Restart มา จะพบกับข้อความแจ้งเตือนใน Taskbar &#34;Docker is starting&#34; </p>
+<p class="image-container"><img style="width: 202.00px" src="img\281ddf44ea0e5491.jpeg"></p>
+<aside class="warning"><p><strong>Caution:</strong>   หาก Restart Docker ไม่ Run จะพบข้อความ Notification ดังรูปด้านล่างให้ทำการกดปุ่ม Start</p>
+<p class="image-container"><img style="width: 515.50px" src="img\1a1b8a9b29df0a6c.png"></p>
+<p class="image-container"><img style="width: 223.00px" src="img\a25aafe03fa208a.png"></p>
+</aside>
+<p>จากนั้นให้เราคลิ๊กขวา ที่ icon ของ Docker ใน Taskbar แล้วเลือกเมนู Dashboard </p>
+<p class="image-container"><img style="width: 557.50px" src="img\b6c30c06d460254e.jpeg"></p>
+<p>&#34;เพียงเท่านี้เราก็สามารถใช้งาน Docker ในระบบปฏิบัติการ Windows เรียบร้อยแล้ว&#34;</p>
+<p>เตรียมพบกับ Codelab 2 พื้นฐานการใช้งาน Docker ได้หลังจากนี้........</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="References" duration="1">
+        <h2 is-upgraded>Reference docs</h2>
+<ul>
+<li>Krief, M. (2019). Learning DevOps. Birmingham, Packt Publishing Ltd.: 215-232.</li>
+<li><a href="https://docs.docker.com/docker-for-windows/wsl/" target="_blank">Docker Desktop WSL 2 backend</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10#install-your-linux-distribution-of-choice" target="_blank">Windows Subsystem for Linux Installation Guide for Windows 10</a></li>
+<li><a href="https://piravit-chenpittaya.medium.com/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%95%E0%B8%B1%E0%B9%89%E0%B8%87-windows-subsystem-for-linux-wsl-2-window-10-641343774f88" target="_blank">วิธีติดตั้ง Windows Subsystem for Linux (WSL 2) Window 10</a></li>
+<li><a href="https://www.saladpuk.com/basic/docker-1/wsl" target="_blank">WSL อยากใช้ Windows กับ Linux พร้อมกันทำไง</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>
