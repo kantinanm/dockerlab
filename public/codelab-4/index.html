@@ -1,0 +1,268 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Codelab 4 - Jenkins</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="codelab-4-jenkins"
+                  title="Codelab 4 - Jenkins"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="ข้อกำหนดก่อนการติดตั้ง Jenkins" duration="1">
+        <p> Jenkins คือซอฟต์แวร์ที่ทำหน้าที่เป็น  CI/CD Server ที่ช่วยให้สามารถบูรณาขั้นตอนของการทำงานตามแนวคิดแบบCI/CD อันได้แก่ Build Test Deploy Release ได้อย่างไร้รอยต่อ ใน Codelab นี้เราจะมาศึกษาวิธีการติดตั้ง Jenkins และการทดลองสร้าง Project เบื้องต้นพอให้คุ้นชินกับการใช้งาน</p>
+<h2 is-upgraded><strong>ความต้องการทรัพยากรที่ต้องใช้ :</strong></h2>
+<aside class="special"><p><strong>Minimum hardware requirements : </strong></p>
+<ul>
+<li>256 MB of RAM</li>
+<li>1 GB of drive space (although 10 GB is a recommended minimum if running Jenkins as a Docker container)</li>
+</ul>
+<p><strong>Recommended hardware configuration for a small team : </strong></p>
+<ul>
+<li>4 GB+ of RAM</li>
+<li>50 GB+ of drive space</li>
+</ul>
+</aside>
+<p><strong>ความต้องการ Software (Runtime environment</strong> ) :</p>
+<aside class="warning"><p><strong>JDK/JREs: </strong></p>
+<ul>
+<li>OpenJDK JDK / JRE 8 - 64 bits , หากติดตั้งผ่านตัว Setup บน Windows ให้ใช้ Java 8 </li>
+<li>OpenJDK JDK / JRE 11 - 64 bits, หากติดตั้งใช้งานแบบ Docker Container ให้ใช้ Java 11</li>
+</ul>
+</aside>
+<p>สามารถเลือก Download  JDK,  version ต่างๆ ได้จาก ด้านล่างนี้</p>
+<ul>
+<li><a href="https://download.java.net/openjdk/jdk8u41/ri/openjdk-8u41-b04-windows-i586-14_jan_2020.zip" target="_blank">JDK / JRE 8 - 64 bits</a></li>
+<li><a href="https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_windows-x64_bin.zip" target="_blank">JDK / JRE 11 - 64 bits</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การติดตั้ง JAVA" duration="15">
+        <p><strong>Step 1</strong>. ภายหลังจากการ Download ให้ทำการแตก zip ไฟล์ โดยสามารถระบุ path ที่ต้องการได้ตามความเหมาะสม , ในที่นี้จะทำการสร้าง Directory ขึ้นมาก่อน ชื่อว่า tools </p>
+<p>ปล.ตัวอย่างนีจะแตกไฟล์และ folder ไว้ที่ D:\Tools</p>
+<p class="image-container"><img style="width: 624.00px" src="img\1857996d2f57a416.jpeg"></p>
+<p>เมื่อเสร็จแล้วจะได้ Path ตามนี้ D:\Tools\java-se-8u41-ri</p>
+<p><strong>Step 2</strong>. กำหนดค่า <strong>Environment Variables</strong> ให้กับระบบปฏิบัติการ Windows   โดยไปตั้งค่า  Advance System Setting ซึ่งสามารถเข้าถึงได้จากค้นหาจาก ช่อง cortona search <strong>&#34; advance system setting &#34; </strong></p>
+<p class="image-container"><img style="width: 455.50px" src="img\bcc215c8252b52a4.jpeg"></p>
+<p class="image-container"><img style="width: 278.09px" src="img\c8f93f7f4f5046f.png"></p>
+<p>จากนั้นไป<strong>เลือกตัวแปรที่ชื่อ Path</strong> ที่ <strong>System variables</strong>  แล้วกด Edit</p>
+<p class="image-container"><img style="width: 337.50px" src="img\a5a0fd871ad816ef.jpeg"></p>
+<p>โดยใส่เป็นค่า path ตามที่ระบุใน Step 1 จะถึง folder bin เช่น</p>
+<pre><code>D:\Tools\java-se-8u41-ri\bin</code></pre>
+<p class="image-container"><img style="width: 326.50px" src="img\bbcb1fb9601f93bf.jpeg"></p>
+<p><strong>Step 3</strong>. กำหนดค่า <strong>Environment Variables </strong>โดยการ<strong>สร้างตัวแปร JAVA_HOME</strong> ที่ <strong>System variables  </strong></p>
+<p class="image-container"><img style="width: 350.50px" src="img\b4535a13a0ae5b1d.jpeg"></p>
+<p>โดยใส่เป็นค่า path ตามที่ระบุใน Step 1 ตามด้านล่าง</p>
+<pre><code>D:\Tools\java-se-8u41-ri</code></pre>
+<p class="image-container"><img style="width: 624.00px" src="img\35675dd21a2040ae.jpeg"></p>
+<p class="image-container"><img style="width: 624.00px" src="img\917d65c4745203d7.jpeg"></p>
+<p><strong>Step 4</strong>. ทดสอบ โดยเปิด CMD แล้วพิมพ์ </p>
+<pre><code>Java -version</code></pre>
+<p>จะได้ผลดังรูป</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e2dcfc5067490123.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การติดตั้ง Jenkins" duration="4">
+        <p>หลังจากที่มีการ Download  Jenkins มาเรียบร้อยให้ ให้ดำเนินการตามขั้นตอนดังนี้</p>
+<p><strong>Step 1</strong>. Double Click ตัวติดตั้ง แล้วกด Next </p>
+<p class="image-container"><img style="width: 456.50px" src="img\30445f34da56f009.jpeg"></p>
+<p><strong>Step 2</strong>. กำหนด path folder ปลายทางที่ทำการติดตั้ง</p>
+<p class="image-container"><img style="width: 457.00px" src="img\ca74eeaac354383a.png"></p>
+<p><strong>Step 3</strong>. เลือก Run service as LocalSystem (not recommended) หลังจากน้ันกด Test เพื่อทดสอบ Credentials</p>
+<p class="image-container"><img style="width: 450.00px" src="img\c25a3d8a0edfbc9d.jpeg"></p>
+<p><strong>Step 4</strong>. กำหนด Port ที่ใช้ในการ Run (Default : 8080) จากนั้นกดปุ่ม Next</p>
+<p class="image-container"><img style="width: 455.69px" src="img\e6b54ea8816a7ce2.jpeg"></p>
+<p><strong>Step 5</strong>. กำหนด Java Runtime : เบื้องต้น ตัวติดตั้งจะ Detect path ให้เอง แต่สามารถกำหนดเองได้ ตามตัวอย่างนี้จะใช้  </p>
+<pre><code>D:\Tools\java-se-8u41-ri</code></pre>
+<p>จากนั้นกด Next</p>
+<p class="image-container"><img style="width: 477.50px" src="img\9f5027bb59fc20fe.jpeg"></p>
+<p><strong>Step 6</strong>. เพิ่มข้อยกเว้นของ Port ที่ใช้งาน (Default: 8080) ให้สามารถผ่าน firewall เครื่องได้ โดย Click Firewall Exception แล้วเลือกให้ install  จากนั้นกด Next</p>
+<p class="image-container"><img style="width: 491.50px" src="img\7cee39fe365b2258.jpeg"></p>
+<p><strong>Step 7</strong>. กด Install แล้วรอจนเสร็จ </p>
+<p class="image-container"><img style="width: 502.50px" src="img\1945fff0ed666765.jpeg"></p>
+<p><strong>Step 8</strong>. ตรวจสอบดูว่ามี Service Jenkins ถูกติดตั้งหรือไม่  โดยพิมพ์ services.msc ในช่อง cortona search</p>
+<p class="image-container"><img style="width: 498.00px" src="img\3e7e65341c6ea20d.jpeg"></p>
+<p>จากนั้นคิดเลือก </p>
+<p class="image-container"><img style="width: 498.50px" src="img\1671ce2b4094277e.jpeg"></p>
+<p>พิจารณาตามรูป  </p>
+<p class="image-container"><img style="width: 498.50px" src="img\20ee1edfaebf8cdf.jpeg"></p>
+<p>---- เรียบร้อย ----</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การใช้งาน Jenkins ผ่าน Docker Images" duration="4">
+        <p>Jenkins นั้นมีให้บริการในรูปแบบของ ซอฟต์แวร์คอนเทนเนอร์ ในรูปแบบ Docker ซึ่งทำให้เราไม่เสียเวลาในการติดตั้ง </p>
+<p class="image-container"><img style="width: 624.00px" src="img\c8ddcecf5c4fbfe5.jpeg"></p>
+<p><strong>วิธีการใช้งาน</strong></p>
+<pre><code>docker pull jenkins/jenkins </code></pre>
+<p>หลังจากนั้นพิมพ์คำสั่งตามนี้</p>
+<pre><code>docker run -p 8080:8080 -v jenkins_home:/var/jenkins_home jenkins:jenkins</code></pre>
+<p>หลังจากนั้นมองหา Unlocking key จาก console output ตัวอย่าง</p>
+<pre><code>2021-05-24 14:27:54.133+0000 [id=28]    INFO    jenkins.install.SetupWizard#init:
+
+*************************************************************
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+ff65ae03f630458f9456b4fad1afd1d2
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+*************************************************************
+*************************************************************
+</code></pre>
+<p>ในตัวอย่างจะได้ Unlocking  key คือ <code>ff65ae03f630458f9456b4fad1afd1d2</code> ให้กลับไปทำในหัวข้อที่ 5 Unlocking Jenkins</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Unlocking Jenkins" duration="1">
+        <p>หลังจากติดตั้ง Jenkin เสร็จแล้ว ก่อนจะใช้งานได้ ต้องทำการ Unlocking Jenkins ก่อน</p>
+<p><strong>Step 1</strong>. เปิด Browser ขึ้นมา แล้วเข้า <a href="http://localhost:8080" target="_blank">http://localhost:8080</a> (หรือ port อื่นๆที่แต่ละคนกำหนด) รอจนถึงหน้าต่าง Unlock Jenkins page แสดง</p>
+<p class="image-container"><img style="width: 452.37px" src="img\d932975b2713f184.jpeg"></p>
+<p><strong>Step 2</strong>.เปิดไฟล์  initialAdminPassword ที่ folder  C:\Program Files\Jenkins\secrets เพื่อดูรหัสปลดล็อก</p>
+<p class="image-container"><img style="width: 508.50px" src="img\1fdf03ec3dffeb7b.jpeg"></p>
+<p class="image-container"><img style="width: 624.00px" src="img\6835a59f3ea37ef8.jpeg"></p>
+<p><strong>Step 3</strong>. นำไปใส่ในหน้า page จากนั้นกด Continue</p>
+<p><strong>Step 4</strong>. สร้าง User สำหรับ Admin เพื่อไว้ใช้ในการจัดการ</p>
+<p class="image-container"><img style="width: 607.50px" src="img\6392ac413278186e.jpeg"></p>
+<p><strong>Step 5</strong>. ติดตั้ง Plugin และรอจนเสร็จ</p>
+<p class="image-container"><img style="width: 603.50px" src="img\258a53583e5e87f6.jpeg"></p>
+<p class="image-container"><img style="width: 624.00px" src="img\305545e8e270a807.jpeg"></p>
+<p><strong>Step 6</strong>. กำหนดค่า Instance URL config  </p>
+<p class="image-container"><img style="width: 624.00px" src="img\9a37c239fe92081d.jpeg"></p>
+<p><strong>Step 7</strong>. ทุกอย่างโอเคมั้ย</p>
+<p class="image-container"><img style="width: 624.00px" src="img\3c925f9054b079e7.jpeg">  </p>
+<p>---- เรียบร้อย ----</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การติดตั้ง Plugin เพิ่มเติมใน Jenkins" duration="2">
+        <p>Jenkins นั้นมี Plugin ที่แนะนำให้ติดตั้งเพิ่มเติม ยังไงก็ลองศึกษาเพิ่มเติมได้นะครับว่า Plugin ไหนเหมาะสมกับเรา </p>
+<p>วิธีการติดตั้งทำได้โดย</p>
+<p><strong>Step 1</strong>. Login เข้ามา และคลิกเมนู Manage Jenkins</p>
+<p class="image-container"><img style="width: 565.50px" src="img\7b44c40347000d62.jpeg"></p>
+<p><strong>Step 2</strong>. คลิกเมนู Manage Jenkins</p>
+<p class="image-container"><img style="width: 624.00px" src="img\69a3aface3883e82.jpeg"></p>
+<p><strong>Step 3</strong>. จากนั้นพิมพ์ในช่องค้นหา plugin ตามที่ต้องการ </p>
+<p class="image-container"><img style="width: 556.50px" src="img\ebb7bb025c869885.jpeg"></p>
+<p><strong>Step 4</strong>. Clickเลือก Plugin ที่ต้องการแล้วกด Install without restart</p>
+<p class="image-container"><img style="width: 624.00px" src="img\5cfd672c504a135c.jpeg"></p>
+<p class="image-container"><img style="width: 624.00px" src="img\48004130276a2b10.jpeg"></p>
+<p><strong>Step 5</strong>. รอจนติดตั้งเสร็จ</p>
+<p class="image-container"><img style="width: 581.00px" src="img\aad2fabf8e4ca706.jpeg"></p>
+<p><strong>Step 6</strong>. เมื่อติดตั้งเสร็จแล้ว Checked ที่ Restart Jenkins  จะนั้นให้ Login เข้า Jenkins ใหม่อีกครั้ง</p>
+<p class="image-container"><img style="width: 552.00px" src="img\6cd14d30fe1fa5cd.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การสร้าง Project ใน Jenkins" duration="2">
+        <p><strong>Step 1</strong>. Click ที่  New Item</p>
+<p class="image-container"><img style="width: 501.00px" src="img\222b4b417ae64e25.jpeg"></p>
+<p><strong>Step 2</strong>. ใส่ชื่อ Project ที่ต้องการ และเลือก Templete ของ Project ในที่นี้เลือกเป็นแบบ  FreeStyle Project </p>
+<p class="image-container"><img style="width: 624.00px" src="img\ae5a7bfd2b1e420d.jpeg"></p>
+<p><strong>Step 3</strong>. กำหนดค่า Description  ตามด้านล่างนี้  หรือข้อความที่ใช้อธิบาย Project</p>
+<p class="image-container"><img style="width: 462.00px" src="img\43e18e838d611316.jpeg"></p>
+<aside class="special"><p><strong>รู้หรือไม่: </strong></p>
+<ul>
+<li>สามารถใส่ HTML Tag ในช่อง Description ได้ด้วยนะ</li>
+</ul>
+</aside>
+<p><strong>Step 4</strong>. กำหนดค่าในส่วน Source Code Management ตามด้านล่างนี้   </p>
+<p class="image-container"><img style="width: 601.00px" src="img\a19c7c52f3c797cb.jpeg"></p>
+<p><strong>Step 5</strong>. กำหนดค่าในส่วน Build โดยเลือก Add Build step -&gt; Execute Shell  หลังจากนั้นใส่ Command &#34;date&#34; ในช่อง Execute Shell ตามรูป</p>
+<p class="image-container"><img style="width: 583.00px" src="img\bc46f160054b1c71.jpeg"></p>
+<p class="image-container"><img style="width: 552.50px" src="img\d03fcc5b5f4e3bc.jpeg"></p>
+<p><strong>Step 6</strong>. เมื่อกำหนดค่าทุกอย่างเสร็จ กดปุ่ม  Save</p>
+<p class="image-container"><img style="width: 347.00px" src="img\9ac22cb49e2377c4.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การ Build Project" duration="1">
+        <p><strong>Step 1</strong>. กลับมาที่หน้า Dashboard จากนั้นเลือก Project ที่ต้องการ Build</p>
+<p class="image-container"><img style="width: 624.00px" src="img\638af8887d64e685.jpeg"></p>
+<p><strong>Step 2</strong>. Click ฺ Build now</p>
+<p class="image-container"><img style="width: 624.00px" src="img\7e31456b3e7ebca8.jpeg"></p>
+<p><strong>Step 3</strong>. สังเกตุที่เมนู เราสามารถคลิกดูรายละเอียด Console output ได้</p>
+<p class="image-container"><img style="width: 386.00px" src="img\752e6322bb0adf5e.jpeg"></p>
+<p><strong>Step 4</strong>. พิจารณา Console Output</p>
+<p class="image-container"><img style="width: 535.00px" src="img\496c06ee85515b3.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การกำหนด Credentials" duration="2">
+        <p>        เพื่อให้การทำ Codelab 5 สมบูรณ์ เราควรจะเพิ่ม Credentials ทั้ง Dockerhub และ github</p>
+<p><strong>Step 1</strong>. ที่หน้า Dashboard จากนั้นเลือกเมนู Manage Jenkins -&gt; Credentials</p>
+<p class="image-container"><img style="width: 470.00px" src="img\660ebc1e49fac199.jpeg"></p>
+<p><strong>Step 2</strong>. Click add credentials</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c1261fd5ff25a246.jpeg"></p>
+<p><strong>Step 3</strong>. ระบุ docker id และ รหัสผ่าน พร้อมคำอธิบาย &#34;Dockerhub credentials&#34; หรือ &#34;github&#34;  ลงไปในฟอร์ม</p>
+<p class="image-container"><img style="width: 624.00px" src="img\fcd7f81585afe166.jpeg"></p>
+<p><strong>Step 4</strong>. หากเรียบร้อยไม่มีปัญหา จะปรากฏตามรูปด้านล่างนี้</p>
+<p class="image-container"><img style="width: 624.00px" src="img\131b45f48c6a253c.jpeg"></p>
+<p>อย่าลืมเพิ่ม ทั้ง Dockerhub และ github นะจ๊ะ</p>
+<h2 is-upgraded><strong>การดู id credential ดูได้จากนี้จ้า</strong></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\84f250ac473fabe8.jpeg"></p>
+<p>ปล.ต้องเอาไปใช้ใน Codelab 5 นะจ๊ะ</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="สรุป" duration="1">
+        <ul>
+<li>Jenkins คือ CI/CD Server ที่ใช้ Java Runtime สามารถติดตั้งได้จาก Setup ของระบบปฏิบัติการ Windows หรือจะใช้งานผ่าน Docker ก็มีให้ Docker Image ให้ใช้งาน</li>
+<li>การใช้งานครั้งแรกเมื่อติดตั้งเสร็จต้อง Unlock Key ก่อนเริ่มการใช้งาน</li>
+<li>เราทำการสร้าง Job ไว้ใน Project และในแต่ละ Project สามารถมีพื้นที่ Workspace ของใครของมันที่ใช้ในการเก็บ Resource หรือพวก Log และ Result Output  </li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="References" duration="1">
+        <p><a href="https://techoral.com/blog/java/openjdk-install-windows.html" target="_blank">How to Download and Install OpenJDK 8 on Windows 10</a></p>
+<p><a href="https://www.jenkins.io/doc/book/installing/windows/#prerequisites" target="_blank">https://www.jenkins.io/doc/book/installing/windows/#prerequisites</a></p>
+<p><a href="https://www.jenkins.io/doc/administration/requirements/java/" target="_blank">https://www.jenkins.io/doc/administration/requirements/java/</a></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

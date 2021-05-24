@@ -1,0 +1,235 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Codelab 2 - พื้นฐานการใช้งาน git</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="codelab-2-git"
+                  title="Codelab 2 - พื้นฐานการใช้งาน git"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="หลักการพื้นฐานของ Git" duration="8">
+        <p>Git เป็น Distributed Version Control System (DVCS) ซึ่งต้องมีการก็อปปี้เวอร์ชันของซอร์สโค้ดมาเก็บไว้ในเครื่องของเราก่อน (Local Host) ทำให้ผู้ใช้สามารถแก้ไขโปรเจ็กต์ได้ทุกที่แบบ Offline และ Check-in เพื่อจัดเก็บความเปลี่ยนแปลงของซอร์สโค้ดลงในฐานข้อมูลภายในเครื่องของเรา (Local Repository) โดยไม่จำเป็นต้องติดต่อกับ Git Repository บนเซริฟเวอร์และพอแก้ไขเสร็จแล้วจึงค่อยสั่ง Sync เพื่อให้ Version ฝั่ง Local และ Server อัพเดตเหมือนกันในภายหลัง (ด้วยการ Pull/Merge/Push)</p>
+<h2 is-upgraded><strong>การทำงานของ Git</strong></h2>
+<p>หลักการทำงานของ Git จะแบ่งสถานะของไฟล์ที่มันติดตาม (Tracked) ออกเป็น 3 สถานะ ได้แก่</p>
+<ul>
+<li>Modified หมายถึง เราได้แก้ไขไฟล์ไปแล้ว แต่ยังไม่เริ่มกระบวนการจัดเก็บลง Repository</li>
+<li>Staged หมายถึงเราได้ทำเครื่องหมาย File ที่ได้ถูกแก้ไขเพื่อจะบันทึกในเวอร์ชันหน้า</li>
+<li>Committed หมายถึง ข้อมูลถูกบันทึกอย่างปลอดภัยใน Repository บน Local Host ซึ่งจะแสดงการเปลี่ยนสถานะของไฟล์ในส่วนต่างๆ ดังรูปที่ 1</li>
+</ul>
+<p class="image-container"><img style="width: 569.00px" src="img\107bab237189afd5.png"></p>
+<p>รูปที่ 1 การทำงานของ Git</p>
+<p>จากรูปที่ 1 การทำงานของ Git มีกระบวนการดังนี้</p>
+<ul>
+<li>เราจะแก้ไขไฟล์ใน Working Directory (ไฟล์ที่แก้ไขจะอยู่ในสถานะ Modified)</li>
+<li>รวบรวมไฟล์ที่ถูกแก้ไขลงใน Staging Area เพื่อจะ commit ใน Version ถัดไป โดยไฟล์ที่ถูกรวบรวมจะอยู่ในสถานะ Staged</li>
+<li>Commit เพื่อนำไฟล์จาก Staging Area ไปจัดเก็บอย่างถาวรใน Local Repository (ไฟล์ที่ถูกบันทึกลง Repository อยู่ในสถานะ Committed</li>
+</ul>
+<h2 is-upgraded><strong>การติดตั้ง Git Client และการเรียกใช้งาน</strong></h2>
+<p>        ก่อนจะใช้งาน Git จำเป็นจะต้องมีการติดตั้ง Git Client ก่อน โดยสามารถดาวน์โหลดตัว setup ได้ที่ <a href="https://git-scm.com/downloads" target="_blank">https://git-scm.com/downloads</a> เลือกดาวน์โหลดตาม OS ที่ใช้งาน ดังรูปที่ 2<br></p>
+<p class="image-container"><img style="width: 414.50px" src="img\f7bba885b326e075.png"></p>
+<p>รูปที่ 2 ดาวน์โหลดตัว Setup Git Client</p>
+<p>เมื่อดาวน์โหลดเรียบร้อยแล้วให้ทำตามขั้นตอนการติดตั้งดังต่อไปนี้</p>
+<ol type="1" start="1">
+<li>ดับเบิลคลิกตัว Setup เพื่อทำการ install โปรแกรม เมื่อหน้าต่าง Setup ปรากฏขึ้นมาให้คลิกที่ปุ่ม <strong>Next</strong> ไปเรื่อยๆ ดังรูปที่ 3 <br> </li>
+</ol>
+<p class="image-container"><img style="width: 268.50px" src="img\e9d67e1b44762d42.png"><img style="width: 266.50px" src="img\6cbac3189c374c8c.png"><img style="width: 265.50px" src="img\6a0298feb1ffaf24.png"><img style="width: 267.00px" src="img\ac9f52c137a279aa.png"></p>
+<p>รูปที่ 3 ขั้นตอนการ Install Git</p>
+<ol type="1" start="2">
+<li>จนถึงหน้า Configuring experimental options คลิก <strong>Install </strong>และ <strong>Finish </strong>ตามลำดับ ดังรูปที่ 4</li>
+</ol>
+<p class="image-container"><img style="width: 290.00px" src="img\1a896e8c059dc4d0.png"><img style="width: 293.50px" src="img\13bad38af09457ab.png"></p>
+<p>รูปที่ 4 ขั้นตอนการ Install Git</p>
+<ol type="1" start="3">
+<li>ทดสอบว่าสามารถใช้งาน git ได้หรือไม่โดยการเปิด Command Prompt แล้วพิมพ์คำสั่ง </li>
+</ol>
+<pre><code>git version</code></pre>
+<p>ผลลัพธ์ที่ได้จากการเรียกดูเวอร์ชัน ดังรูปที่ 5</p>
+<p class="image-container"><img style="width: 260.00px" src="img\602be7d34f7cc335.png"></p>
+<p>รูปที่ 5 ผลลัพธ์ที่ได้จากการเรียกดูเวอร์ชัน</p>
+<h2 is-upgraded><strong>คำสั่ง Git เบื้องต้น</strong></h2>
+<pre><code>git init</code></pre>
+<p>เป็นคำสั่งที่ใช้สร้าง .git ใน Project ของเราซึ่งมันจะสร้าง History เก็บการเปลี่ยนแปลงทั้งหมดที่เราทำใน Project นั้นๆ เมื่อสร้าง Project ใหม่ทุกครั้งสิ่งที่ควรทำเป็นอย่างแรก</p>
+<pre><code>git config --global user.name &#34;your-name&#34;
+git config --global user.email &#34;your-email@mail.com&#34;</code></pre>
+<p>เป็นคำสั่งที่คอนฟิก git ให้จำ username และ email จะใช้คำสั่งนี้ตอนใช้งานครั้งแรก</p>
+<pre><code>git add</code></pre>
+<p>        คำสั่งใช้สำหรับ Track ไฟล์และส่งมันไปยัง Staging Area</p>
+<pre><code>git status</code></pre>
+<p>คำสั่งใช้สำหรับดูสถานะ Project</p>
+<pre><code>git reset</code></pre>
+<p>คำสั่งในการย้อนเวอร์ชันไฟล์ให้กลับไปอยู่ในสภาพเดิมก่อนที่จะ add เข้าสู่ Staging Area</p>
+<pre><code>git remote add origin https://GitHub.com/username/repository.git</code></pre>
+<p>        คำสั่งเชื่อมโยง Local Repository บนเครื่องของเรากับ Remote Repository บน GitHub Server </p>
+<pre><code>git commit -m &#34;Description of commit&#34;</code></pre>
+<p>        เป็นคำสั่งในการจัดเก็บไฟล์อย่างถาวรด้วยการสร้างเป็นเวอร์ชันของซอร์สโค้ด และใช้พารามิเตอร์ -m สำหรับใส่ข้อความช่วยจำ เพื่ออธิบายการ Commit แต่ละเวอร์ชัน</p>
+<pre><code>git push</code></pre>
+<p>        ใช้สำหรับ Sync ข้อมูลกับ GitHub Server </p>
+<pre><code>git pull</code></pre>
+<p>ใช้ดึงการเปลี่ยนแปลงล่าสุดจาก remote repository มายัง local repository </p>
+<pre><code>git clone https://GitHub.com/username/repository.git</code></pre>
+<p>        คำสั่งสำหรับการดึงข้อมูล repository หรือ code ของคนอื่นมาใช้หรือศึกษา</p>
+<pre><code>git branch</code></pre>
+<p>        คือคำสั่งที่ใช้ในการจัดการ branch ต่างๆ </p>
+<pre><code>git checkout branchName</code></pre>
+<p>        คือคำสั่งในการเปลี่ยนไปยัง branch ที่ระบุ</p>
+<pre><code>git merge branchName</code></pre>
+<p>คือคำสั่งที่ใช้ในการรวมไฟล์จาก branch ที่ต้องการเข้ามาใน master branch</p>
+<pre><code>git log</code></pre>
+<p>ใช้ในการเรียกดู History ของ Project ว่ามีการเปลี่ยนแปลงอะไรไปบ้าง</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ขั้นตอนการสมัคร GitHub" duration="2">
+        <p>GitHub คือ เว็บไซต์ที่ให้บริการ Git โดยจะให้บริการบนออนไลน์แพลตฟอร์มทำให้เราสามารถเข้าถึงข้อมูลผ่านหน้าเว็บไซต์ได้ทุกที่ทุกเวลา และเรายังสามารถใช้ Git ร่วมกับคนอื่นได้อีกด้วย</p>
+<h2 is-upgraded><strong>วิธีการสมัคร GitHub</strong></h2>
+<ol type="1" start="1">
+<li>เข้าไปที่ <a href="https://github.com/join" target="_blank">https://GitHub.com/join</a></li>
+<li>กรอก username, email, password และ Verify ให้เรียบร้อย ดังรูปที่ 6 จากนั้นคลิก <strong>Create account</strong></li>
+</ol>
+<p class="image-container"><img style="width: 440.97px" src="img\143bd0e1a283e191.png"></p>
+<p>รูปที่ 6 ขั้นตอนการสมัคร GitHub</p>
+<ol type="1" start="3">
+<li>ตอบคำถามให้ครบทุกข้อ ดังรูปที่ 7 จากนั้นคลิกที่ปุ่ม<strong> Complete setup</strong></li>
+</ol>
+<p class="image-container"><img style="width: 306.50px" src="img\721c076919f5aafb.png"><img style="width: 277.50px" src="img\9add59502949fbfa.png"></p>
+<p>รูปที่ 7 ขั้นตอนการสมัคร GitHub</p>
+<ol type="1" start="4">
+<li>เข้าไปใน email ที่กรอกไว้ตอนสมัคร แล้วทำการ verify email ดังรูปที่ 8</li>
+</ol>
+<p class="image-container"><img style="width: 562.00px" src="img\629546f9c33f25be.png"></p>
+<p>รูปที่ 8 verify email</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การสร้าง Project บน GitHub" duration="13">
+        <p>ก่อนที่จะสร้าง Project บน GitHub เราควรตั้งค่า Default Branch จาก main ให้เป็น master ก่อน โดยการคลิกเมนูมุมบนขวา และเลือก Settings</p>
+<p class="image-container"><img style="width: 143.00px" src="img\1c18ef9236fc592c.png"></p>
+<p>จากนั้นที่เมนูด้านซ้าย คลิกที่ Repository</p>
+<p class="image-container"><img style="width: 201.00px" src="img\13101a814bfd01e6.png"></p>
+<p>เปลี่ยน main เป็น master แล้วคลิก Update</p>
+<p class="image-container"><img style="width: 506.81px" src="img\c6aa36235f56bb58.png"></p>
+<p>จากนั้นเราจะมาสร้าง Project บน GitHub เพื่อใช้เก็บ Remote Project สำหรับ Sync กับ Local Project บนเครื่องของเราได้ โดยมีขั้นตอนดังต่อไปนี้</p>
+<ol type="1" start="1">
+<li>ที่ GitHub คลิก <strong>Create a repository</strong> ดังรูปที่ 9</li>
+</ol>
+<p class="image-container"><img style="width: 219.50px" src="img\1a651c0a0f17d432.png"></p>
+<p>รูปที่ 9 ขั้นตอนการ Create repository</p>
+<ol type="1" start="2">
+<li>ใส่ชื่อ Repository name ดังรูปที่ 10 แล้วคลิกที่<strong> Create repository</strong></li>
+</ol>
+<p class="image-container"><img style="width: 523.00px" src="img\bfcf4de01a676778.png"></p>
+<p>รูปที่ 10 ขั้นตอนการ Create repository</p>
+<ol type="1" start="3">
+<li>เมื่อ Create repository เรียบร้อยแล้ว ผลลัพธ์ที่ได้จะแสดงดังรูปที่ 11</li>
+</ol>
+<p class="image-container"><img style="width: 577.50px" src="img\6e15b5a0962db082.png"></p>
+<p>รูปที่ 11 ผลลัพธ์การ Create repository</p>
+<h2 is-upgraded><strong>การสร้าง Remote Repository</strong></h2>
+<p>        เพื่อจะใช้งาน Distributed Version Control System อย่าง Git Local Host เราจะต้องสร้างการเชื่อมต่อเพื่อติดต่อกับ Remote Repository โดยใช้ URL จาก Clone with HTTP ดังรูปที่ 12 ซึ่ง URL ที่ได้เป็นเหมือนเส้นทางติดต่อระหว่างเครื่องของเรากับ GitHub Server</p>
+<p class="image-container"><img style="width: 624.00px" src="img\93be338c47fb6b5d.png"></p>
+<p>รูปที่ 12 การก็อปปี้ URL เพื่อใช้ในการเชื่อมโยงกับ Remote Repository</p>
+<h2 is-upgraded><strong>การคอนฟิก Git ให้พร้อมใช้งาน</strong></h2>
+<p>เปิด File Explorer ขึ้นมาแล้วไปยัง Directory ที่จะใช้สำหรับเก็บ Local Project บนเครื่องของเรา จากนั้นคลิกพื้นที่ว่าง บนช่อง Address Bar ดังรูปที่ 13 จะมีแถบสีน้ำเงินคลุมอยู่ให้เราลบโดยปุ่ม Delete แล้วพิมพ์ cmd ลงไป เสร็จแล้วกด Enter </p>
+<p class="image-container"><img style="width: 260.00px" src="img\95dbfc3deb305495.png"></p>
+<p>รูปที่ 13 Address Bar ของ File Explorer<br></p>
+<p>จะมีหน้าต่าง Command Prompt ปรากฏขึ้นมา ดังรูปที่ 14</p>
+<p class="image-container"><img style="width: 485.18px" src="img\d1eac07eb9843e3d.png"></p>
+<p>รูปที่ 14 หน้าต่าง Command Prompt</p>
+<p>ในการใช้งานครั้งแรก เราจะต้องคอนฟิก Git ให้จำ Username และ Email ด้วยคำสั่ง </p>
+<pre><code>git config --global user.name &#34;Username&#34;
+git config --global user.email &#34;email@mail.com&#34;</code></pre>
+<p>จากนั้นสร้างโฟลเดอร์ของ Project ชื่อ &#34;gitLab&#34; บน Local Host และใช้คำสั่ง git init เพื่อเริ่มต้นการทำงานจะได้ผลลัพธ์ดังรูปที่ 15</p>
+<pre><code>mkdir gitLab //สร้างโฟลเดอร์ของ Project
+cd gitLab //เข้า Directory ของโฟลเดอร์ที่เราสร้าง
+git init</code></pre>
+<p class="image-container"><img style="width: 465.50px" src="img\d3fd702e6ddb4114.png"></p>
+<p>รูปที่ 15 ผลลัพธ์ที่ได้จากคำสั่ง git init</p>
+<p>หลังจากนั้นให้เชื่อมโยง Local Repository บนเครื่องของเรากับ Remote Repository บน GitHub Server โดยนำ URL จาก Clone with HTTP (จากรูปที่ 12) มาใช้ผ่านคำสั่ง </p>
+<pre><code>git remote add origin https://GitHub.com/username/gitLab.git</code></pre>
+<p>เป็นอันเสร็จสิ้นสำหรับการคอนฟิก Git เพื่อให้พร้อมใช้งาน</p>
+<h2 is-upgraded><strong>วิธีการ Check-in กับ Local Repository</strong></h2>
+<p>        ให้เราสร้างไฟล์ hello.html ขึ้นมา 1 ไฟล์ โดยใช้โปรแกรม Text Editor ที่มีอยู่ในเครื่อง แล้วก็อปปี้ Code ดังต่อไปนี้ไปวางในไฟล์ hello.html</p>
+<pre><code>&lt;HTML&gt;
+&lt;HEAD&gt;&lt;/HEAD&gt;
+&lt;BODY&gt;
+Hello Git
+&lt;/BODY&gt;
+&lt;/HTML&gt;</code></pre>
+<p>ไฟล์ที่สร้างใหม่จะยังไม่ถูกติดตามความเปลี่ยนแปลง (track) จากระบบ Git ซึ่งเราสามารถดูสถานะของไฟล์ใน Project ได้โดยใช้คำสั่ง </p>
+<pre><code>git status</code></pre>
+<p>สังเกตว่าไฟล์ที่มีสถานะ Modified จะเป็นสีแดง ดังรูปที่ 16</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e11e319e94f3da51.png"></p>
+<p>รูปที่ 16 ไฟล์ hello.html ที่ยังไม่ถูก Track</p>
+<p>Track ไฟล์ hello.html โดยใช้คำสั่ง git add เพื่อให้ไฟล์อยู่ในสถานะ Staged จะเป็นสีเขียว ดังรูปที่ 17</p>
+<pre><code>git add .</code></pre>
+<p class="image-container"><img style="width: 389.00px" src="img\7ae9409b78224476.png"></p>
+<p>รูปที่ 17 ไฟล์ hello.html ที่อยู่ในสถานะ Staged</p>
+<p>หลังจากนั้นใช้คำสั่ง git commit เพื่อจัดเก็บไฟล์อย่างถาวรด้วยการสร้างเป็นเวอร์ชันของซอร์สโค้ด และใช้พารามิเตอร์ -m สำหรับใส่ข้อความช่วยจำ เพื่ออธิบายการ Commit แต่ละเวอร์ชัน</p>
+<pre><code>git commit - m &#34;Description of commit&#34;</code></pre>
+<p>และ Sync History กับ Remote Git Repository โดยใช้คำสั่ง</p>
+<pre><code>git push -u origin master</code></pre>
+<p>จากนั้นจะมีหน้าต่างยืนยันตันตนกับ GitHub Server ให้คลิกที่  <strong>Sign in with your browser </strong>จากนั้นคลิก <strong>Authorize GitCredentialManager </strong>ดังรูปที่ 18 *ในขั้นตอนนี้หากเคย Auth แล้วจะไม่มีหน้าต่างนี้ขึ้นมา</p>
+<p class="image-container"><img style="width: 293.50px" src="img\95d8760bace12a57.png"><img style="width: 234.50px" src="img\38ce8ac60ae3cc1f.png"></p>
+<p>รูปที่ 18 หน้าต่างยืนยันตันตนกับ GitHub Server</p>
+<p>เมื่อเข้าไปดูที่ GitHub จะพบว่ามีการ Sync ข้อมูลกับ Remote Repository เรียบร้อยแล้ว ดังรูปที่ 19 ในครั้งต่อไปเราสามารถ Push โดยใช้เพียงคำสั่ง git push สั้นๆ เพราะเราได้ใช้พารามิเตอร์ -u เพื่อให้มันจดจำว่าเราจะ push ไปที่ Remote และ Branch</p>
+<p class="image-container"><img style="width: 624.00px" src="img\9bf2af2e8987245e.png"></p>
+<p>รูปที่ 19 หน้าจอ Project Detail ที่มีการ Sync ข้อมูลกับ Remote Repository แล้ว</p>
+<h2 is-upgraded><strong>วิธีการ Deploy เว็บไซต์ด้วย GitHub Pages</strong></h2>
+<p>        เราสามารถทำเว็บไซต์โดยการ Deploy ด้วย GitHub Pages โดยการไปที่ Repository ที่เราต้องการทำ จากนั้นไปที่ Settings เลื่อนลงมาดูที่ส่วน GitHub Pages คลิกที่ Check it out here! ดังรูปที่ 20</p>
+<p class="image-container"><img style="width: 436.27px" src="img\cc84900f30f0f862.png"></p>
+<p>รูปที่ 20 หน้าจอ GitHub Pages</p>
+<p>ตรง Source คลิกที่ None แล้วเลือก branch ที่เราต้องการ ดังรูปที่ 21 เมื่อเลือก branch เรียบร้อยแล้ว คลิกที่ Save</p>
+<p class="image-container"><img style="width: 580.57px" src="img\999ed0f0bd847c20.png"></p>
+<p>รูปที่ 21 หน้าจอเลือก branch</p>
+<p>เราจะได้เว็บไซต์ของเรา ดังรูปที่ 22</p>
+<p class="image-container"><img style="width: 560.50px" src="img\ace5ce75858c8f81.png"></p>
+<p>รูปที่ 22 หน้าจอแสดง URL ที่ได้มา</p>
+<p>รอสักครู่จนกว่าขึ้น site is published ดังรูปที่ 23 จึงสามารถใช้งานเว็บไซต์ของเราได้</p>
+<p class="image-container"><img style="width: 624.00px" src="img\4a875ef07a5a0bfa.png"></p>
+<p>รูปที่ 23 หน้าจอแสดง URL ที่สามารถใช้งานได้</p>
+<p>สามารถเข้า URL ได้จาก https://username.GitHub.io/gitLab/hello.html</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="References" duration="1">
+        <h2 is-upgraded>Reference docs</h2>
+<ul>
+<li>อ.ดร.ณัฐโชติ พรหมฤทธิ์. (2563). <strong>Practical DEVOPS and Cloud Engineering</strong> (นนทบุรี:บริษัท ไอดีซี พรีเมียร์ จำกัด, 2563), หน้า 29 - 44 </li>
+<li><a href="https://devahoy.com/blog/2017/02/how-to-host-website-on-github-pages/" target="_blank">วิธีการ Deploy เว็บไซต์แบบฟรีๆ ด้วย GitHub Pages</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

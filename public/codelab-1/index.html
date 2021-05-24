@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <meta name="theme-color" content="#4F7DC9">
   <meta charset="UTF-8">
-  <title>Codelab 1 - ปฐมบท Software Container</title>
+  <title>Codelab 1 - แนวคิดของ DevOps, CI/CD</title>
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
   <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
@@ -22,24 +22,112 @@
 <body>
   <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
   <google-codelab codelab-gaid=""
-                  id="codelab-1-software-container"
-                  title="Codelab 1 - ปฐมบท Software Container"
+                  id="codelab-1-devops-ci-cd"
+                  title="Codelab 1 - แนวคิดของ DevOps, CI/CD"
                   environment="web"
                   feedback-link="">
     
-      <google-codelab-step label="เทคโนโลยีซอฟต์แวร์คอนเทนเนอร์" duration="4">
-        <p>แนวความคิดของเทคโนโลยีซอฟต์แวร์คอนเทนเนอร์นั้น  เกิดขึ้นครั้งแรกในปี  ค.ศ. 2000 ใน ระบบปฏิบัติการยูนิกซ์ FreeBSD jail  โดยได้พัฒนาขึ้นเพื่อให้สามารถทำงานในลักษณะของการแยกส่วนและกำหนดสภาพแวดล้อมของระบบต่างๆภายในเครื่องเดียวกันได้  โดยระบบต่างๆสามารถใช้งาน (Kernel) และเข้าถึงทรัพยากรภายในเครื่องได้ </p>
+      <google-codelab-step label="DevOps, CI/CD" duration="8">
+        <p>DevOps, CI/CD หลายคนคงเคยได้ยิน Technical term ทั้ง 2 นี้ มันคืออะไรกัน เด๋วจะอธิบายคร่าวๆตามมาเลย</p>
+<p>สมัยก่อนกระบวนการพัฒนาซอต์ฟแวร์ที่นิยมใช้คือ SDLC</p>
+<p class="image-container"><img style="width: 624.00px" src="img\39330a9799290942.jpeg"></p>
+<ol type="1" start="1">
+<li> Analysis คุยกับลูกค้า  รวบรวมความต้องการ</li>
+<li> Design ออกแบบระบบ </li>
+<li> Implementation เขียนโปรแกรม  Coding ให้ได้มาซึ่ง output</li>
+<li> Testing , Functional and Non-Functional , input -&gt; output</li>
+<li> Deployment ติดตั้งให้ลูกค้าใช้</li>
+<li> Maintenance บำรุงรักษา</li>
+</ol>
+<p>แต่ปัจจุบันก็ยังคงใช้งานกันอยู่ กระบวนการพัฒนาเป็นลำดับขั้นตอนลักษณะ Waterfall !!! แล้วมันมีปัญหายังไง? </p>
+<p>ทุกอย่างย่อมมีธุรกิจมาเกี่ยวข้อง กระบวนการพัฒนาแบบ SDLC เริ่มไม่สามารถตอบสนองปัญหาที่เกิดขึ้นระหว่างกระบวนการได้  กว่า<strong>จะเจอตอ ก็โน่น กระบวนการปลายน้ำ</strong>  คำถามต่อมาคือทีม Dev จะสามารถรู้ Feedback ของระบบได้เมื่อไร ?  คำตอบคือกระบวนการที่ 4-6 โน่นไงละหนู  หากเป็นแบบนี้แล้วจะทันแก้มั้ยละ  ?  มันมีอะไรที่ทำให้ทีม Dev รับรู้ปัญหาให้ทันถ่วงทีหรือรวดเร็วกว่านี้มั้ย ?</p>
+<p>หลายๆคนอาจจะเคยเจอ Project ที่ </p>
+<ul>
+<li>Requirement เปลี่ยนแปลงได้ตลอดเวลา</li>
+<li>User ไม่รู้ว่าตัวเองต้องการอะไร</li>
+<li>User อยากได้ระบบที่ใช้งานได้เร็วที่สุด (ยังไม่ครบฟังก์ชันก็ได้)</li>
+<li>ความสัมพันธ์ในทีมค่อนข้างแย่ (คุยกับ code และ document เท่านั้น)</li>
+<li>ไม่รู้ว่าคนอื่นภายในทีมกำลังทำอะไรกันอยู่</li>
+</ul>
+<p>ลองคิดดูทีม Dev จะปิด Project ได้เมื่อไร ? (เจ็บ บ่อยๆ ค่อยๆชิน )</p>
+<p>นักคิดนักปราชญ์ แห่งทางด้านคอมพิวเตอร์ ก็มานั่งคิดกัน มันก็พอมีอยู่นะ มาลองดูแนวนี้ต่อไปนี้</p>
+<h2 is-upgraded><strong>แนวคิดในการพัฒนาซอฟต์แวร์แบบ Agile </strong></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\3e1306f83b892826.png"></p>
+<p>Agile เป็นรูปแบบหนึ่งในการพัฒนา Software มี 4 ข้อเป็นหลักในการปฏิบัติดังนี้</p>
+<ol type="1" start="1">
+<li><strong>คนและการมีปฎิสัมพันธ์กัน มากกว่าการทำตามขั้นตอนและเครื่องมือ</strong> การพูดคุยกันในทีม คือสิ่งสำคัญ เพื่อเป็นการถ่ายทอดข้อมูลให้กันและกัน ว่าใครทำอะไรอยู่ ปัญหาที่พบเจอในทีมคืออะไร โดยเน้นการพูดคุยซึ่งหน้าเป็นสำคัญ</li>
+<li><strong>มุ่งพัฒนาซอฟต์แวร์ที่นำไปใช้งานได้จริง มากกว่าเอกสารที่ครบถ้วนสมบูรณ์</strong> โดยเน้นความพึงพอใจของลูกค้าที่มีต่อ Software ซึ่งมีคุณภาพตั้งแต่เริ่มจนจบ ส่งมอบ Software ที่ใช้งานได้จริงอย่างสม่ำเสมอต่อลูกค้า  </li>
+<li><strong>ร่วมมือทำงานกับลูกค้า มากกว่าการต่อรองให้เป็นไปตามสัญญา</strong> มีการพูดคุยกับฝ่ายลูกค้ากับฝ่ายพัฒนาอย่างสม่ำเสมอเพื่อให้มั่นใจว่าสิ่งที่กำลังทำนั้นเป็นสิ่งที่ฝ่ายลูกค้าต้องการจริงๆ</li>
+<li><strong>ตอบรับกับการเปลี่ยนแปลง มากกว่าการทำตามแผนที่วางไว้</strong> ยอมรับการเปลื่ยนแปลงความต้องการของลูกค้าแม้ในช่วงท้ายของการพัฒนา เข้าใจความต้องการที่เปลี่ยนแปลงได้ตลอดตามสถานการณ์ของลูกค้าในการแข่งขันกับคู่แข่ง</li>
+</ol>
+<p>การนำ Agile ไปใช้งานจะมีหลายเทคนิค เช่น XP (Extreme Programming) หรือ Scrum หรือ TDD (Test-Driven Development) </p>
+<p class="image-container"><img style="width: 624.00px" src="img\2442c714010e3d9a.png"></p>
+<p>จากแผนภาพเป็น Scrum Methodology ที่ implement หลักปฏิบัติของ Agile สรุปง่ายๆ เพื่อประหยัดเวลาคือ เป็นหลักปฏิบัติที่เน้นทำงานเป็นรอบๆ  iteration หรือเรียกว่า Sprint  ของการพัฒนา โดยในแต่ละรอบจะมีการ Release ฟังก์ชั่นของซอฟต์แวร์ตามแผนที่วางไว้  โดยที่มีกลุ่มบุคคลที่เกี่ยวข้องดังนี้ </p>
+<ol type="1" start="1">
+<li>Product Owner คนที่กำหนดทิศทางผลิตภัณฑ์</li>
+<li>Development Team กลุ่มคนที่สร้างผลิตภัณฑ์</li>
+<li>Scrummaster คนที่ช่วยทำให้ทุกอย่างราบรื่น</li>
+</ol>
+<p>จากแนวความคิดที่กล่าวมา จะเริ่มเห็นว่าในการพัฒนาซอฟต์แวร์ตามหลักการของ Agile ที่ใช้ Scrum Methodology  นั้นในแต่ละรอบการทำงานจะคนข้างสั้น และเหล่าทีมพัฒนาที่เกี่ยวข้องจะพบต้องประชุมกันทุกวันก่อนเริ่มการทำงาน เล่าความคืบหน้าและปัญหาในการทำงานกันไป ประกอบกับแต่ละ Sprint ต้องทำการ Delivery หรือ Release ไปเรื่อยๆ ตามแผนที่วางไว้จนสมบูรณ์ ซึ่งแน่นอนทำให้เกิดความบ่อยครั้งในการ Delivery จึงเป็นที่มาของแนวความคิดที่จะจัดการกับ Sourcecode ที่ต้องรวบรวมมา Build เพื่อ Release นำไป Test และส่งมอบ Delivery จำนวนบ่อยครั้งภายในทีมได้  นั้นละคือ CI/CD</p>
+<h2 is-upgraded><strong>CI/CD </strong></h2>
+<h2 is-upgraded>มาจากตัวย่อของคำว่า continuous integration และ continuous delivery หรือ continuous deployment</h2>
+<p class="image-container"><img style="width: 591.50px" src="img\8543943bebd7c710.png"></p>
+<ul>
+<li>CI (Continuous Integration) คือ กระบวนการรวม source code ของคนในทีมพัฒนาเข้าด้วยกัน และมีการ test ด้วย test script เพื่อให้แน่ใจว่าไม่มี error ในส่วนใดๆ ของโปรแกรม แล้วถึงทำการ commit ไปที่ branch master อีกต่อนึง</li>
+</ul>
+<aside class="special"><p><strong>Build Server:</strong> คือหัวใจสำคัญของการทำ Integration กันตั้งแต่เมื่อมีการเปลี่ยนแปลง Source Code ที่ Repository กลาง ระบบจะทำการตรวจสอบ Code หลังจากการเปลี่ยนแปลงว่าทำงานร่วมกันได้หรือไม่ตั้งแต่ Compile, Testing</p>
+</aside>
+<ul>
+<li>Continuous Deployment คือ การ Deploy ขึ้น production โดยจะทำทุกขั้นตอน ตั้งแต่ complie build ไปจนถึง deploy ขึ้น production แบบอัตโนมัติทั้งหมด</li>
+</ul>
+<h2 is-upgraded><strong>DevOps</strong></h2>
+<p>แน่นอนว่าในตำแหน่งงานทางด้าน IT ที่เกี่ยวข้องกับกระบวนการพัฒนาซอฟต์แวร์นั้นมีหลายตำแหน่ง  แต่หากเราโฟกัส Job ที่เกี่ยวข้องกับ CI/CD นั้นก็จะพูดถึง 2 ตำแหน่งนี้คือ</p>
+<ol type="1" start="1">
+<li>Developer ผู้ต้องพัฒนาซอฟต์แวร์ หรือ Programmer</li>
+<li>Operator ผู้ที่ทำหน้าที่เป็น System Admin คอยดูแลระบบ Infrastrutor สำหรับการ Deployment</li>
+</ol>
+<p>        สองคำนี้เป็นผู้มีบทบาทมากในกระบวนการพัฒนาซอฟต์แวร์ ไม่ว่าในรูปแบบของ SDLC หรือ Agile และเป็นที่ต้องการของตลาดแรงงานในปัจจุบัน เนื่องจากต้องรู้และเข้าใจหรือมีประสบการณ์ทั้ง 2 ด้าน</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e29ce4f08044696f.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ปฐมบท Software Container" duration="8">
+        <p>เคยมั้ยที่ Dev เสร็จแล้ว  แต่พอเอาขึ้น Production แล้วเจ๊ง ไม่เป็นท่า</p>
+<p>ก็มันรันที่นี่ได้นิ  มันเป็นปัญหาของคุณไม่เกี่ยวกับฉัน !! </p>
+<p class="image-container"><img style="width: 624.00px" src="img\3453bad9258d68bb.jpeg"></p>
+<p>ถ้าคุณเคยเจอปัญหาเหล่านี้ มาแสดงว่าคุณก็พอที่จะอินกับเนื้อหาที่จะสอนภายในวันนี้.</p>
+<aside class="warning"><p><strong>Question</strong> เราจะแก้ปัญหานี้อย่างไรดี ?</p>
+</aside>
+<p class="image-container"><img style="width: 624.00px" src="img\a8bc8ab35ff10f3e.png"></p>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>พิจารณาเทคโนโลยีซอฟต์แวร์ที่จำลองคอมพิวเตอร์เสมือน พวก  Virtual machines</li>
+</ul>
+</aside>
+<p class="image-container"><img style="width: 624.00px" src="img\cbe55f1dcada9abc.jpeg"></p>
+<ul>
+<li>VMs resource allocation is fixed and does not change as per appplication needs</li>
+<li>Containers are light weigth alternative to VMs</li>
+</ul>
+<p>แนวความคิดของเทคโนโลยีซอฟต์แวร์คอนเทนเนอร์นั้น  เกิดขึ้นครั้งแรกในปี  ค.ศ. 2000 ใน ระบบปฏิบัติการยูนิกซ์ FreeBSD jail  โดยได้พัฒนาขึ้นเพื่อให้สามารถทำงานในลักษณะของการแยกส่วนและกำหนดสภาพแวดล้อมของระบบต่างๆภายในเครื่องเดียวกันได้  โดยระบบต่างๆสามารถใช้งาน (Kernel) และเข้าถึงทรัพยากรภายในเครื่องได้ </p>
 <p class="image-container"><img style="width: 318.00px" src="img\49f402c7d22bc41e.jpeg"></p>
 <p>        ต่อมาในปี ค.ศ. 2001 ในระบบปฏิบัติการลีนุกซ์ได้เริ่มมีแนวคิดที่จะพัฒนาสภาพแวดล้อมแบบแยกส่วน (Kernel-level Isolation) ขึ้นภายใต้โครงการที่ชื่อว่า VServer ซึ่งผลลัพธ์ของโครงการนี้ทำให้แนวคิดเทคโนโลยีการจำลองในระบบคอมพิวเตอร์เริ่มเข้ามีบทบาทในระบบปฏิบัติการลีนุกซ์เป็นครั้งแรก  จนมาในปี ค.ศ. 2008 ระบบปฏิบัติการลีนุกซ์ ได้ผนวก Linux Containers (LXC)  เข้ากับส่วน (Kernel) ของระบบปฏิบัติการ  โดยมีจุดประสงค์เพื่อให้สามารถสร้างสภาพแวดล้อมเฉพาะให้กับซอฟต์แวร์หรือระบบอื่นๆทำงานได้โดยไม่กวนกับซอฟต์แวร์หรือระบบอื่นภายในระบบปฏิบัติการเดียวกัน  ในระยะแรกยังไม่ได้รับความนิยมเนื่องจากใช้งานยากและไม่มีระบบจัดการ  แต่<em>ต่อมาในปี ค.ศ. 2013  บริษัท Docker, Inc. ได้พัฒนาส่วนที่ใช้ในการจัดการคอนเทนเนอร์ที่สะดวกต่อการใช้งานจนกระทั่งได้รับความนิยมใช้งานอย่างแพร่หลาย  </em></p>
+<p class="image-container"><img style="width: 624.00px" src="img\597c16f9a0313b83.jpeg"></p>
 <h2 is-upgraded><strong>Docker คืออะไร</strong></h2>
 <p>Docker คือซอฟต์แวร์คอนเทนเนอร์ประเภทหนึ่งที่มีระบบจัดการจัดที่มีประสิทธิภาพ มีกลุ่มผู้ใช้งาน(Community) จำนวนมาก  มี Engine ในการรองรับการติดตั้งแอพพลิเคชั่นในสถาปัตยกรรมแบบ Container    แอพพลิเคชั่นที่ถูกติดตั้งจะสามารถแยกออกจาก host system ได้อิสระและสามารถทำให้แอพพลิเคชั่นของเรามีความสามารถแบบ porttable (run หรือ executable ) ได้ทุกๆ platform </p>
-<h3 is-upgraded>องค์ประกอบที่สำคัญ ของ Docker</h3>
+<p class="image-container"><img style="width: 624.00px" src="img\2a4255ab4970ea9c.jpeg"></p>
+<h2 is-upgraded><img style="width: 624.00px" src="img\3e0088aed4ae1999.jpeg"></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\6f762c637d9373d8.jpeg"></p>
+<h2 is-upgraded><strong>องค์ประกอบที่สำคัญ ของ Docker</strong></h2>
 <ol type="1" start="1">
 <li><strong>Docker client</strong> คือชุดคำสั่งหรือโปรแกรมที่ใช้จัดการ images ผ่าน Commandline </li>
-<li><strong>Docker deamon </strong>หรือ  Docker&#39;s engine เปรียบเสมือนกลไกที่ช่วยในการติดตั้งแอพพลิเคชั่นแบบซอฟต์แวร์คอนเทนเนอร์ </li>
+<li><strong>Docker deamon </strong>เปรียบเสมือนกลไกที่ช่วยในการจัดการ Image Management , Image build, authentication security , networking , REST API</li>
 <li><strong>Docker Hub</strong> หรือ Docker Registry คือ Community ของกลุ่มผู้ใช้งานสำหรับเก็บ images ของ Docker แบบสาธารณะ</li>
 </ol>
-<h3 is-upgraded>จุดเด่นที่นิยมนำมาใช้งาน</h3>
+<h2 is-upgraded><img style="width: 624.00px" src="img\37fb8bccb2f4eb6b.jpeg"></h2>
+<p class="image-container"><img style="width: 624.00px" src="img\6f23683b404053fe.jpeg"><img style="width: 624.00px" src="img\4fbb271d7d034f24.jpeg"></p>
+<h2 is-upgraded><strong>จุดเด่นที่นิยมนำมาใช้งาน</strong></h2>
 <ol type="1" start="1">
 <li>Docker คือเครื่องมือที่ทำงานได้แบบ cross-platform มีในทุกระบบปฏิบัติการที่ได้รับความนิยม อธิ Windows , Linux  หรือ macOS ตลอดจนผู้ให้บริการผ่านระบบ cloud   เช่น AWS และ Azure</li>
 <li>มีความซับซ้อนและสิ้นเปลืองทรัพยากรน้อยกว่าการทำงานแบบเทคโนโลยีคอมพิวเตอร์เสมือนหรือ Virtual Machine</li>
@@ -51,6 +139,15 @@
 <p>Docker Hub คือ พื้นที่สำหรับจัดเก็บ images แบบสาธารณะในการให้บริการผ่าน Cloud หรือเรียกว่า  Docker registry ปัจจุบันมีจำนวน Images ที่ถูกพัฒนาโดยบริษัทชั้นนำในแวดวง IT และผู้ใช้งานมากกว่า 2 ล้าน images</p>
 <h4 is-upgraded>การลงทะเบียน Docker Hub ให้เข้าไปที่ <a href="https://hub.docker.com/" target="_blank">https:/​/​hub.​docker.​com</a>​ จากนั้น ระบุ docker id, email และ password ที่ต้องการ  แล้ว Click ที่ปุ่ม Sign up for Docker</h4>
 <p class="image-container"><img style="width: 502.00px" src="img\2bf3c61bb8eb994d.jpeg"></p>
+<p class="image-container"><img style="width: 462.50px" src="img\f704ee612712b275.jpeg"></p>
+<p>เลือก Free Plan </p>
+<p class="image-container"><img style="width: 485.50px" src="img\aa0c07e16e218f3d.jpeg"></p>
+<p>หลังจากนั้นระบบจะให้ทำการ Verify ที่ Mail</p>
+<p class="image-container"><img style="width: 509.00px" src="img\f3781cb90209f833.jpeg"></p>
+<p>เข้าไปตรวจสอบที่ Mailbox </p>
+<p class="image-container"><img style="width: 525.50px" src="img\feec877a45a25a79.jpeg"></p>
+<p>จากนั้น Click verify</p>
+<p class="image-container"><img style="width: 520.50px" src="img\3b3ba84998c553f7.jpeg"></p>
 <p>เมื่อ docker account ถูก create ผู้ใช้งานจะสามารถ Sign-in ที่เว็บไซต์และสามารถ Upload images เพื่อเก็บไว้ใน Docker Hub ได้ทันที หรือสามารถดาวน์โหลด Docker Desktop เพื่อใช้จัดการ images ได้</p>
 <p>หากต้องการตรวจสอบดูว่าใน Docker Hub นั้นมี images ที่น่าสนใจนั้น จะทำได้ที่เมนู Explore</p>
 <p class="image-container"><img style="width: 624.00px" src="img\58192816aa26f57f.jpeg"></p>
@@ -139,7 +236,7 @@
 <p>จากนั้นให้เราคลิ๊กขวา ที่ icon ของ Docker ใน Taskbar แล้วเลือกเมนู Dashboard </p>
 <p class="image-container"><img style="width: 557.50px" src="img\b6c30c06d460254e.jpeg"></p>
 <p>&#34;เพียงเท่านี้เราก็สามารถใช้งาน Docker ในระบบปฏิบัติการ Windows เรียบร้อยแล้ว&#34;</p>
-<p>เตรียมพบกับ Codelab 2 พื้นฐานการใช้งาน Docker ได้หลังจากนี้........</p>
+<p>เตรียมพบกับ Codelab 3 พื้นฐานการใช้งาน Docker ได้หลังจากนี้........</p>
 
 
       </google-codelab-step>

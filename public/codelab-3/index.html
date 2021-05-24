@@ -1,0 +1,1516 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Codelab 3 - DockerWorld</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="codelab-3-dockerworld"
+                  title="Codelab 3 - DockerWorld"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="คำสั่ง RUN" duration="5">
+        <p>หลังจาก Codelab 1 ปฐมบท Software Container  ทุกท่านน่าจะได้จัดเตรียม WSL และ Docker Desktop มาติดตั้งยังเครื่องของท่านเรียบร้อยแล้ว หลังจากนี้จะเป็นการทดลองใช้งาน และฝึกการใช้งานในคำสั่งต่างๆที่จำเป็นในโลกของ Docker กัน ก่อนที่จะไปเรียนรู้วิธีการเขียน Dockerfiles และการทำ Stack Build ในแบบฉบับของ Docker-Compose ใน  Codelab 3 - 4 ตามลำดับ</p>
+<h2 is-upgraded><strong>Docker RUN</strong></h2>
+<p>        คำสั่งที่ใช้ในการ run docker images ขึ้นมามีรูปแบบดังนี้</p>
+<pre><code>docker run [OPTIONS ...] IMAGE[:TAG|@DIGEST] </code></pre>
+<p>   โดยที่  <code>OPTIONS</code>          คือ </p>
+<p><code>IMAGE[:TAG|@DIGEST]</code>  คือ ชื่อของ image docker (ถ้าแบบ Official หน่อยก็จะอยู่ ใน DockerHub, หรือเป็นชื่อ images ที่เรา tag ตอน Build เองกันในเครื่อง local ) โดยสามารถระบุ Tag ได้ว่าจะใช้ tag name อันไหน  </p>
+<aside class="warning"><p><strong>Caution:</strong> ถ้าไม่ได้ระบุ tag name หลังชื่อ images ที่ต้องการ run,  Docker มันจะเข้าใจว่าเป็น tag latest อัตโนมัติ  อธิบายให้เห็นภาพคือ</p>
+<p><code>docker run nginx จะเท่ากับ docker run nginx@lastest </code></p>
+</aside>
+<p>ทดลองกันเลย </p>
+<pre><code>docker run nginx </code></pre>
+<p class="image-container"><img style="width: 635.37px" src="img\3c8d3f4711444d22.jpeg"></p>
+<p>จะเห็นได้ว่า การที่เราไม่ได้ระบุ tag ให้กับ images ที่เราจะ run, Docker นั้นจะเดิม ให้เอง ดูจากรูปข้อความที่ว่า </p>
+<pre><code>Unable to find image &#39;nginx:latest&#39; locally
+latest: Pulling from library/nginx</code></pre>
+<p>และจะเริ่มตรวจสอบ images ในเครื่องเราก่อนว่ามีหรือไม่?  หากเครื่องเราไม่พบ images ที่ต้องการ Docker มันจะทำการไป Download ยัง DockerHub หรือ Private Reposites ที่เราได้ทำการ Login ไว้</p>
+<pre><code>f7ec5a41d630: Pull complete
+aa1efa14b3bf: Pull complete
+b78b95af9b17: Pull complete
+c7d6bca2b8dc: Pull complete
+cf16cd8e71e0: Pull complete
+0241c68333ef: Pull complete
+Digest: sha256:75a55d33ecc73c2a242450a9f1cc858499d468f077ea942867e662c247b5e412
+Status: Downloaded newer image for nginx:latest</code></pre>
+<p>แล้วจะรู้ได้อย่างไรว่าใน Docker Container นั้นมี images อะไรบ้างที่ run อยู่ ?</p>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ตรววจสอบใน Docker Container นั้นมี images ตัวไหนทำงานอยู่บ้างคือ</strong></h2>
+<pre><code>docker container ps</code></pre>
+<p>  โดยที่คำสั่งนี้จะ แสดงข้อมูล  images พร้อมรายละเอียดที่ run อยู่ทั้งหมด เช่น</p>
+<pre><code>CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                     PORTS     NAMES
+fb0dc3206472   nginx     &#34;/docker-entrypoint....&#34;   13 seconds ago   Up 13 seconds              80/tcp    busy_mendel
+62d4b479deb7   nginx     &#34;/docker-entrypoint....&#34;   6 minutes ago    Exited (0) 2 minutes ago             kind_galileo</code></pre>
+<aside class="special"><p><strong>รู้หรือไม่: </strong></p>
+<ul>
+<li>ทุกครั้งที่มีการ run docker images โดยที่ไม่ได้ระบุชื่อนั้น ใน Docker Engine จะทำการสร้างชื่อในกับ images ที่ run ใน docker container ใหม่ทุกครั้ง</li>
+</ul>
+</aside>
+<h3 is-upgraded><img style="width: 775.50px" src="img\16eb08040b62802e.jpeg"></h3>
+<h2 is-upgraded><strong>การแสดง Images ที่มีทั้งหมดในเครื่องใช้คำสั่งนี้</strong></h2>
+<pre><code>docker images -a</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Option ในการ run มีอะไรบ้าง" duration="15">
+        <h2 is-upgraded>Argument ที่มักใช้ระบุเพื่อเป็น Option ในการ RUN<strong> มีดังนี้</strong></h2>
+<p><strong>-p </strong> [expose:app port]   เป็นการ Map portเข้ากับ port ที่อยู่ใน Docker Image เพื่อบ่งบอกว่าเราสามารถเข้าถึงได้อย่างไร โดยที่ </p>
+<ul>
+<li>Expose port คือ port ที่ต้องการให้สามารถเข้าถึงได้จากเครื่องภายนอก </li>
+<li>App port คือ port ปกติใน App หรือ Service ใน Docker Images นั้นใช้ทำงานหรือ listen </li>
+</ul>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -p 8080:80 php:7.4-apache</code></pre>
+<aside class="warning"><p><strong>Caution:</strong> ตรงนี้ควรระวังเรื่อง Port หากเครื่องเรามี Application อื่นที่ใช้ Port 8080 ควรเปลี่ยนไปใช้ Port อื่นแทน</p>
+</aside>
+<p><strong>--name </strong>[ชื่อทึ่ระบุ] เป็นการกำหนดชื่อของ docker image หลังจากที่มีการ run เพื่อใช้อ้างอิงใน docker container</p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -p 8080:80 --name app-01 php:7.4-apache</code></pre>
+<p>ภายหลังการ RUN ใช้คำสั่ง docker ps เพื่อดูว่าภายใน container มี image อะไรบ้างที่ run อยู่</p>
+<pre><code>CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                  NAMES
+c77a98b5bbe7   php:7.4-apache   &#34;docker-php-entrypoi...&#34;   3 minutes ago   Up 3 minutes   0.0.0.0:8080-&gt;80/tcp   app-01</code></pre>
+<p>และทดสอบโดยการเข้า <a href="http://localhost:8080" target="_blank">http://localhost:8080</a> ซึ่งผลควรจะเป็นแบบนี้</p>
+<p class="image-container"><img style="width: 503.50px" src="img\ab3ddce7c8a0d803.jpeg"></p>
+<h2 is-upgraded>Bind name <strong>volume</strong><strong> การ Mount folder สำหรับใช้ใน Container </strong></h2>
+<p><strong>-v </strong>[<strong>my_dir:sys_dir</strong>] เป็น mount directory ตาม path ของเครื่องเรา เข้ากับ path ใน  docker image โดยที่ </p>
+<ul>
+<li><strong>my_dir </strong>คือ directory ที่มี source code ในเครื่องเรา </li>
+<li><strong>sys_dir </strong>คือ directory ใน Docker Images ที่ service หรือ app นั้นใช้ โดยการอ้างถึง</li>
+</ul>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -p 8080:80 -v &#34;$PWD&#34;/src:/var/www/html --name app-02 php:7.4-apache</code></pre>
+<p>ก่อน run ให้สร้าง folder src ที่  working directory ก่อน และสร้างไฟล์ info.php โดยใช้ code นี้</p>
+<p><code>&lt;?php phpinfo(); ?&gt;</code></p>
+<p>จากนั้นทดสอบคำสั่ง RUN ตามด้านบน และลองเข้า <a href="http://localhost:8080/info.php" target="_blank">http://localhost:8080/info.php</a> ซึ่งผลควรจะเป็นแบบนี้</p>
+<p class="image-container"><img style="width: 611.50px" src="img\8fdc98f277318dbf.jpeg"></p>
+<p>อีก 1 ตัวอย่าง ที่ใช้ในการ mount dir จากเครื่องเข้าสู่ Working Directory ใน Container ( Service mysql)</p>
+<aside class="special"><p><strong>กรณี  Linux </strong></p>
+<ul>
+<li>ให้สร้าง folder ชื่อ script โดยใช้คำสั่ง <code>sudo mkdir script</code> </li>
+<li>cd script (เข้าไปที่ folder ชื่อ script  ภายหลังจากที่สร้าง)</li>
+<li>Download restdemo.tar นี้  โดยใช้คำสั่ง <code>sudo wget www.ecpe.nu.ac.th/kantinan/docker/restdemo.tar</code></li>
+<li>แตกไฟล์ที่ Download มา โดยใช้คำสั่ง <code>sudo tar -xvf restdemo.tar</code></li>
+</ul>
+</aside>
+<pre><code>docker run --name mysqlRestDemo -v &#34;$PWD&#34;/script:/var/lib/mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_ROOT_HOST=% mysql:5.7</code></pre>
+<aside class="special"><p><strong>กรณี Windows  </strong></p>
+<ul>
+<li>ให้สร้าง folder ชื่อ script ใน D:\</li>
+<li>Download <a href="http://www.ecpe.nu.ac.th/kantinan/docker/restdemo.zip" target="_blank">restdemo.zip</a> และแตกไฟล์ไปยัง D:\script </li>
+</ul>
+</aside>
+<pre><code>docker run --name mysqlRestDemo -v d:/script:/var/lib/mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_ROOT_HOST=% mysql:5.7</code></pre>
+<h2 is-upgraded>Run in <strong>detached </strong><strong>mode </strong></h2>
+<p><strong>-d </strong>  หรือ <strong>detached  </strong>mode สำหรับบ่งบอกว่า ให้ run แบบ background process</p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -p 8080:80 -d --name app-03 -v &#34;$PWD&#34;/src:/var/www/html php:7.4-apache</code></pre>
+<aside class="warning"><p><strong>Caution:</strong> หากเราไม่ระบุ -d  ภายหลังจากการ run เสร็จ จะเห็น console output</p>
+</aside>
+<pre><code>ecpe@ecpe-svr-web:~$ docker run -p 8080:80 -v &#34;$PWD&#34;/src:/var/www/html --name app-02 php:7.4-apache
+AH00558: apache2: Could not reliably determine the server&#39;s fully qualified domain name, using 172.17.0.2. Set the &#39;ServerName&#39; directive globally to suppress this message
+AH00558: apache2: Could not reliably determine the server&#39;s fully qualified domain name, using 172.17.0.2. Set the &#39;ServerName&#39; directive globally to suppress this message
+[Thu May 20 05:56:10.183838 2021] [mpm_prefork:notice] [pid 1] AH00163: Apache/2.4.38 (Debian) PHP/7.4.19 configured -- resuming normal operations</code></pre>
+<h2 is-upgraded>Automatically <strong>remove</strong><strong> the container when it exits</strong></h2>
+<p><strong>--rm    </strong>กำหนดให้ลบอัตโนมัติ หลังจากสิ้นสุดการ run  </p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -p 8080:80 --rm -d --name app-04 -v &#34;$PWD&#34;/src:/var/www/html php:7.4-apache</code></pre>
+<p>Set environment variables</p>
+<p><strong>-e </strong>  [env list] กำหนดค่า environment variables ที่ใช้สำหรับใน container   </p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run --name mysql5_7 -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_ROOT_HOST=% -d -p 3306:3306 mysql:5.7</code></pre>
+<aside class="special"><p><strong>จะรู้อย่างไรได้ว่ามี </strong>environment variables<strong> อะไรบ้าง? </strong></p>
+<ul>
+<li>ต้องพิจารณาจาก docker hub ตาม images ที่เราเลือกใช้ เช่น <a href="https://hub.docker.com/_/mysql" target="_blank">https://hub.docker.com/_/mysql</a></li>
+</ul>
+</aside>
+<h3 is-upgraded><img style="width: 588.50px" src="img\18ca0902057c5232.jpeg"></h3>
+<h2 is-upgraded><strong>Run with executing the bash command </strong></h2>
+<p><strong>bash -c </strong>[&#34;คำสั่ง&#34;] กำหนดให้ execute คำสั่ง &#34;xx&#34; ภายหลังจากที่มีการ RUN container </p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run -it --rm --name nginx2 -p 8080:80 nginx bash -c &#34;date&#34;</code></pre>
+<p>ผลลัพธ์ดังนี้</p>
+<p><code>Thu May 20 08:26:09 UTC 2021</code></p>
+<aside class="special"><p><strong>กรณี </strong>alpine image<strong> ? </strong></p>
+<ul>
+<li>หากเป็น alpine image ให้ใช้ลักษณะนี้ /bin/sh -c  [&#34;คำสั่ง&#34;] </li>
+</ul>
+</aside>
+<p>ตัวอย่าง </p>
+<pre><code>docker run --name t2 --rm  alpine /bin/sh -c &#34;date&#34;</code></pre>
+<p>ผลลัพธ์ดังนี้</p>
+<p><code>Thu May 20 08:26:09 UTC 2021</code></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การ SSH bash เข้าไปที่จัดการคำสั่งใน Container" duration="2">
+        <p>คำสั่ง </p>
+<p>docker<strong> exec -it</strong> [Name_of_container ] [Command ] โดยที่</p>
+<ul>
+<li>Name_of_container คือชื่อ container ที่เรากำหนดไว้ในคำสั่ง docker run --name </li>
+<li>Command คือคำสั่งที่ประมวลผล</li>
+</ul>
+<p>ตัวอย่างการใช้งานเพื่อเข้าไปสร้างฐานข้อมูล และนำเข้า sql </p>
+<pre><code>docker exec -it mysqlRestDemo mysql -uroot -p</code></pre>
+<p>ผลลัพท์</p>
+<pre><code>Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.34 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+mysql&gt; </code></pre>
+<p>จากนั้นลองสร้าง ฐานข้อมูลที่ชื่อ demo จากคำสั่ง</p>
+<pre><code>mysql&gt; CREATE DATABASE restdemo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>mysql&gt; CREATE DATABASE restdemo;
+Query OK, 1 row affected (0.12 sec)</code></pre>
+<p>จากนั้นสั่งให้แสดง database</p>
+<pre><code>mysql&gt; show databases;</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>mysql&gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| restdemo           |
+| sys                |
++--------------------+
+5 rows in set (0.01 sec)
+</code></pre>
+<p>จากนั้นสลับมาใช้ฐานข้อมูลที่ชื่อว่า restdemo</p>
+<pre><code>mysql&gt; USE restdemo;</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>mysql&gt; USE restdemo;
+Database changed</code></pre>
+<p>และ import  restdemo.sql เข้ามาในฐานข้อมูล  โดยใช้คำสั่ง </p>
+<pre><code>mysql&gt; source /var/lib/mysql/restdemo.sql;</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>mysql&gt; source /var/lib/mysql/restdemo.sql;
+Query OK, 0 rows affected (0.00 sec)
+
+Query OK, 0 rows affected (0.09 sec)
+
+Query OK, 0 rows affected (0.17 sec)
+
+Query OK, 1 row affected (0.04 sec)
+
+Query OK, 1 row affected (0.04 sec)
+</code></pre>
+<p>สุดท้ายแสดงตารางเพื่อดูผลลัพท์การ RUN Script</p>
+<pre><code>mysql&gt; show tables;</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>mysql&gt; show tables;
++--------------------+
+| Tables_in_restdemo |
++--------------------+
+| student            |
++--------------------+
+1 row in set (0.00 sec)</code></pre>
+<p>...ต่อ</p>
+<p>นอกจากนั้นแล้วเรายังสามารถใช้คำสั่งนี้ เพื่อเข้าไปควบคุมการทำงานของ Container ได้</p>
+<pre><code>docker exec -it mysqlRestDemo bash</code></pre>
+<p>ผลลัพท์</p>
+<pre><code>root@08f59187eb5e:/# </code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="คำสั่ง Start , Stop และ Remove" duration="2">
+        <h2 is-upgraded><strong>การเริ่มทำงาน</strong></h2>
+<p><strong> docker container start </strong>[id หรือ names of container]  หรือ <strong> docker start </strong>[id หรือ names of container] </p>
+<p> ใช้เพื่อเริ่มการทำงานของ container ตามชื่อหรือ id ที่ระบุ</p>
+<p><strong>ตัวอย่าง</strong></p>
+<pre><code>docker container start mysql5_7 </code></pre>
+<pre><code>docker start cd78992a268c</code></pre>
+<h2 is-upgraded><strong>การหยุด</strong></h2>
+<p><strong> docker container stop</strong> [id หรือ names of container]  หรือ <strong> docker stop</strong> [id หรือ names of container] </p>
+<p> ใช้เพื่อหยุดการทำงานของ container ตามชื่อหรือ id ที่ระบุ</p>
+<p><strong>ตัวอย่าง</strong></p>
+<pre><code>docker container stop mysql5_7 </code></pre>
+<pre><code>docker stop cd78992a268c</code></pre>
+<aside class="warning"><p><strong>Caution:</strong> การสั่ง Stop หรือสั่งให้ Container นั้นหยุดทำงานนั้น, Container Name นั้นๆ ก็ยังจะอยู่ภายใน Container เสมอจนกว่าจะสั่ง หรือ Remove ออกจาก Container  </p>
+</aside>
+<h2 is-upgraded><strong>การลบ</strong></h2>
+<p><strong>docker rmi </strong> [id ของ image] <strong>-f</strong> หรือ <strong>docker image rm</strong> [id ของ image]<strong> -f </strong></p>
+<p>ใช้ลบ image โดยที่ -f คือการ force บังคับให้หยุดการทำงาน</p>
+<pre><code>docker rmi 35e67b8df392</code></pre>
+<p>หากต้องการลบทั้งหมดใช้คำสั่งนี้</p>
+<pre><code>docker rmi $(docker images -q) -f</code></pre>
+<p><strong>docker rm</strong>  [id หรือ names of container] <strong>-f</strong> หรือ <strong>docker container rm</strong>  [id หรือ names of container] <strong>-f</strong></p>
+<p>ใช้ลบ Container โดยที่ -f คือการ force บังคับให้หยุดการทำงาน</p>
+<pre><code>docker rm -f app-03</code></pre>
+<p><strong>docker rm $( docker ps -q -f status=exited)</strong></p>
+<p>ใช้ลบ Container ทั้งหมด พร้อมบังคับให้หยุด run </p>
+<pre><code>docker rm $( docker ps -q -f status=exited)</code></pre>
+<p><strong>docker volume rm</strong> [id หรือ names of volume] </p>
+<p>ใช้ลบ volume  ตามชื่อหรือ id volume  </p>
+<pre><code>docker volume rm 4e12af8913af888ba67243dec78419bf18adddc3c7a4b2345754b6db64293163</code></pre>
+<p><strong>docker network rm</strong> [id หรือ names of network] </p>
+<p>ใช้ลบ volume  ตามชื่อหรือ id network </p>
+<pre><code>docker network rm c520032c3d31</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="คำสั่งสำหรับ List Docker Object" duration="3">
+        <p>ใน Docker หากเราต้องการ ดูว่าแต่ละ Docker Object มีอะไรบ้าง ให้ใช้คำสั่ง <code>ls</code> เป็นหลักเช่น</p>
+<p> คำสั่งในการดูว่ามี volume อะไรอยู่บ้าง</p>
+<pre><code>docker volume ls</code></pre>
+<p>ผลลัพธ์ </p>
+<pre><code>DRIVER              VOLUME NAME
+local               4e12af8913af888ba67243dec78419bf18adddc3c7a4b2345754b6db64293163
+local               terano</code></pre>
+<p> คำสั่งในการดูว่ามี Image อะไรอยู่บ้าง</p>
+<pre><code>docker image ls</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+centos                  latest              75835a67d134        7 days ago          200MB
+ubuntu                  latest              2a4cca5ac898        2 months ago        111MB
+linuxize/fedora         latest              a45d6dca3361        3 months ago        311MB
+java                    8-jre               e44d62cf8862        3 months ago        311MB</code></pre>
+<p> คำสั่งในการดูว่ามี container อะไรอยู่บ้าง โดยเราสามารถใส่ -a เพื่อดูรายการทั้งหมดได้</p>
+<pre><code>docker container ls -a</code></pre>
+<p>ผลลัพธ์ </p>
+<pre><code>CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS                      PORTS               NAMES
+cc3f2ff51cab        centos                  &#34;/bin/bash&#34;              2 months ago        Created                                         competent_nightingale
+cd20b396a061        solita/ubuntu-systemd   &#34;/bin/bash -c &#39;exec ...&#34;   2 months ago        Exited (137) 2 months ago                       systemd
+fb62432cf3c1        ubuntu                  &#34;/bin/bash&#34;              3 months ago        Exited (130) 3 months ago                       jolly_mirzakhani</code></pre>
+<p> คำสั่งในการดูว่ามี network อะไรอยู่บ้าง</p>
+<pre><code>docker network ls</code></pre>
+<p>ผลลัพธ์ </p>
+<pre><code>NETWORK ID          NAME                DRIVER              SCOPE
+107b8ac977e3        bridge              bridge              local
+ab998267377d        host                host                local
+c520032c3d31        my-bridge-network   bridge              local
+9bc81b63f740        none                null                local</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="คำสั่งที่ใช้ในการสร้าง Docker Object" duration="3">
+        <p>ใน Docker เราสามารถสร้าง Object หรือพูดง่ายๆว่าเราสามารถ provide infrastructure ให้กับ container ภายในเรียกใช้ได้ เช่น network, volume </p>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ในการสร้าง volume</strong></h2>
+<p><strong>docker volume create</strong> [name_vol]</p>
+<ul>
+<li>name_vol เป็น ชื่อ volume ที่ใช้อ้างอิงใน container </li>
+</ul>
+<pre><code>docker volume create my_Data</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker volume create my_Data
+my_Data</code></pre>
+<aside class="special"><p><strong>การนำไปใช้งาน ? </strong></p>
+<ul>
+<li>Persistent data = ป้องกันสูญเสียข้อมูลที่จัดเก็บและบันทึกใน Container ภายหลังการ stop</li>
+</ul>
+</aside>
+<p>ในที่นี้จะเป็นการ mount volume my_Data เพื่อให้ Container ใช้แทน path สำหรับเก็บข้อมูล (/var/lib/mysql) ซึ่งเป็น Default path </p>
+<p>ตัวอย่าง </p>
+<pre><code>docker run --name mysql5_7 -v my_Data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_ROOT_HOST=% -d -p 3306:3306 mysql:5.7</code></pre>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ในการสร้าง network</strong></h2>
+<p><strong>docker network create</strong> [name_network] --subnet=[x.x.x.x/no] --gateway=y.y.y.y</p>
+<ul>
+<li>name_network เป็น ชื่อ network ที่ใช้อ้างอิงใน container </li>
+<li>x.x.x.x/no เป็น network_id/subnet</li>
+<li>y.y.y.y เป็น ip ของ geteway</li>
+</ul>
+<p>ตัวอย่าง สร้าง network ที่ชื่อว่า internal_web โดยมี Network ID = 10.10.0.0/24 Gateway = 10.10.0.1</p>
+<pre><code>docker network create --subnet=10.10.0.0/24 --gateway=10.10.0.1 internal_web</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker network create --subnet=10.10.0.0/24 --gateway=10.10.0.1 internal_web
+ffef4afd9539cb289dd6ccb1420f8e1cfaf28dbb39e282fadb42b01a29939c2d
+ecpe@ecpe-svr-web:~$ docker inspect internal_web
+[
+    {
+        &#34;Name&#34;: &#34;internal_web&#34;,
+        &#34;Id&#34;: &#34;ffef4afd9539cb289dd6ccb1420f8e1cfaf28dbb39e282fadb42b01a29939c2d&#34;,
+        &#34;Created&#34;: &#34;2021-05-22T01:06:52.086092294+07:00&#34;,
+        &#34;Scope&#34;: &#34;local&#34;,
+        &#34;Driver&#34;: &#34;bridge&#34;,
+        &#34;EnableIPv6&#34;: false,
+        &#34;IPAM&#34;: {
+            &#34;Driver&#34;: &#34;default&#34;,
+            &#34;Options&#34;: {},
+            &#34;Config&#34;: [
+                {
+                    &#34;Subnet&#34;: &#34;10.10.0.0/24&#34;,
+                    &#34;Gateway&#34;: &#34;10.10.0.1&#34;
+                }
+            ]
+        },
+        &#34;Internal&#34;: false,
+        &#34;Attachable&#34;: false,
+        &#34;Ingress&#34;: false,
+        &#34;ConfigFrom&#34;: {
+            &#34;Network&#34;: &#34;&#34;
+        },
+        &#34;ConfigOnly&#34;: false,
+        &#34;Containers&#34;: {},
+        &#34;Options&#34;: {},
+        &#34;Labels&#34;: {}
+    }
+]</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="คำสั่งอื่นๆ" duration="3">
+        <h2 is-upgraded><strong>คำสั่งที่ใช้ในการตรวจสอบ object ต่างๆ</strong></h2>
+<p><strong>docker inspect</strong> [xxxx]</p>
+<ul>
+<li>xxxx เป็น object หรือชื่อที่ใช้อ้างอิงใน docker demon</li>
+</ul>
+<p>ตัวอย่างการใช้งาน ( ใช้กับชื่อ container )</p>
+<pre><code>docker inspect t2</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker inspect t2
+[
+    {
+        &#34;Id&#34;: &#34;f780f43bb241be2d61c170ed29b19ddc96268b4611cf994f9d7a466ce7a12948&#34;,
+        &#34;Created&#34;: &#34;2021-05-21T06:55:50.199124092Z&#34;,
+        &#34;Path&#34;: &#34;/bin/sh&#34;,
+        &#34;Args&#34;: [
+            &#34;-c&#34;,
+            &#34;date&#34;
+        ],
+        &#34;State&#34;: {
+            &#34;Status&#34;: &#34;exited&#34;,
+            &#34;Running&#34;: false,
+            &#34;Paused&#34;: false,
+            &#34;Restarting&#34;: false,
+            &#34;OOMKilled&#34;: false,
+            &#34;Dead&#34;: false,
+            &#34;Pid&#34;: 0,
+            &#34;ExitCode&#34;: 0,
+            &#34;Error&#34;: &#34;&#34;,
+            &#34;StartedAt&#34;: &#34;2021-05-21T06:55:51.719060916Z&#34;,
+            &#34;FinishedAt&#34;: &#34;2021-05-21T06:55:51.76255834Z&#34;
+        },
+.
+.
+.
+.
+
+}
+]
+</code></pre>
+<p>ตัวอย่างการใช้งาน ( ใช้กับชื่อ volume)</p>
+<pre><code>docker inspect my_Data</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker inspect my_Data
+[
+    {
+        &#34;CreatedAt&#34;: &#34;2021-05-21T14:36:36+07:00&#34;,
+        &#34;Driver&#34;: &#34;local&#34;,
+        &#34;Labels&#34;: {},
+        &#34;Mountpoint&#34;: &#34;/var/lib/docker/volumes/my_Data/_data&#34;,
+        &#34;Name&#34;: &#34;my_Data&#34;,
+        &#34;Options&#34;: {},
+        &#34;Scope&#34;: &#34;local&#34;
+    }
+]</code></pre>
+<h2 is-upgraded><strong>คำสั่งเพื่อตรวจสอบดูว่าภายใน docker machine มี network อะไรอยู่บ้าง?</strong></h2>
+<p><strong>docker network ls</strong></p>
+<pre><code>docker network ls</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+bd1802f078d4   bridge    bridge    local
+09db582587f9   host      host      local
+a5f657bcb2e2   none      null      local</code></pre>
+<aside class="special"><p><strong>จะรู้ได้ไงว่าแต่ละ Network Name มี IP / Subnet อะไร หรือ Assign ไปกี่ Container แล้ว ? </strong></p>
+<ul>
+<li>docker inspect ดูได้เลย</li>
+</ul>
+</aside>
+<p>เช่น</p>
+<pre><code>docker inspect bridge</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker inspect bridge
+[
+    {
+        &#34;Name&#34;: &#34;bridge&#34;,
+        &#34;Id&#34;: &#34;bd1802f078d4ece5fb25235f04e353bd21803b627b21ba89aebae730ccb2af21&#34;,
+        &#34;Created&#34;: &#34;2021-05-20T11:59:25.448441413+07:00&#34;,
+        &#34;Scope&#34;: &#34;local&#34;,
+        &#34;Driver&#34;: &#34;bridge&#34;,
+        &#34;EnableIPv6&#34;: false,
+        &#34;IPAM&#34;: {
+            &#34;Driver&#34;: &#34;default&#34;,
+            &#34;Options&#34;: null,
+            &#34;Config&#34;: [
+                {
+                    &#34;Subnet&#34;: &#34;172.17.0.0/16&#34;,
+                    &#34;Gateway&#34;: &#34;172.17.0.1&#34;
+                }
+            ]
+        },
+        &#34;Internal&#34;: false,
+        &#34;Attachable&#34;: false,
+        &#34;Ingress&#34;: false,
+        &#34;ConfigFrom&#34;: {
+            &#34;Network&#34;: &#34;&#34;
+        },
+        &#34;ConfigOnly&#34;: false,
+        &#34;Containers&#34;: {
+            &#34;c0879edb5d4d262f94b9b0e6b09a40fb87da537a6bbf6de6d64698026228672d&#34;: {
+                &#34;Name&#34;: &#34;mysql5_7&#34;,
+                &#34;EndpointID&#34;: &#34;ef92561be071cd2d09fa6b447737a6754c74f2a9002a064325a1bf2f2719b7c4&#34;,
+                &#34;MacAddress&#34;: &#34;02:42:ac:11:00:02&#34;,
+                &#34;IPv4Address&#34;: &#34;172.17.0.2/16&#34;,
+                &#34;IPv6Address&#34;: &#34;&#34;
+            }
+        },
+        &#34;Options&#34;: {
+            &#34;com.docker.network.bridge.default_bridge&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.enable_icc&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.enable_ip_masquerade&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.host_binding_ipv4&#34;: &#34;0.0.0.0&#34;,
+            &#34;com.docker.network.bridge.name&#34;: &#34;docker0&#34;,
+            &#34;com.docker.network.driver.mtu&#34;: &#34;1500&#34;
+        },
+        &#34;Labels&#34;: {}
+    }
+]</code></pre>
+<h2 is-upgraded><strong>คำสั่งเพื่อตรวจสอบ IP Address ของ Container ที่กำลัง RUN อยู่</strong></h2>
+<p><strong>docker  inspect  -f &#39;&#123;&#123;range .NetworkSettings.Networks}}&#123;&#123;.IPAddress}}&#123;&#123;end}}&#39; xxxxxx</strong></p>
+<ul>
+<li>xxxxxx คือ Container Name สำหรับอ้างอิง</li>
+</ul>
+<p>ตัวอย่างการใช้งาน (ต้องการทราบว่า Container ที่ชื่อว่า mysql5_7 ได้รับการ assign IP อะไร?)</p>
+<pre><code>docker  inspect  -f &#39;&#123;&#123;range .NetworkSettings.Networks}}&#123;&#123;.IPAddress}}&#123;&#123;end}}&#39; mysql5_7</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker  inspect  -f &#39;&#123;&#123;range .NetworkSettings.Networks}}&#123;&#123;.IPAddress}}&#123;&#123;end}}&#39; mysql5_7
+172.17.0.2</code></pre>
+<h2 is-upgraded><strong>คำสั่งเพื่อตรวจสอบดูที่จัดเก็บในระบบหรือมี volume อะไรอยู่บ้าง?</strong></h2>
+<p><strong>docker volume ls  </strong></p>
+<pre><code>docker volume ls</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker volume ls
+DRIVER    VOLUME NAME
+local     1d2db11ca33e46982a9a7be9c223be1164e622f40f2e27081bfa7107d18d02dc
+local     1d51734b8e1e7b11246c8e1387d3cfce424ac8c7994335fcf141c2cad9da7979
+local     6eef2f381a8942de389e189249751067eafdf389f57a29bd259585a741d8b1c9
+local     my_Data</code></pre>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ดูพื้นที่</strong></h2>
+<p><strong>docker system df</strong></p>
+<pre><code>docker system df</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          5         2         1.279GB   962.2MB (75%)
+Containers      2         1         4B        0B (0%)
+Local Volumes   19        1         1.354GB   1.135GB (83%)
+Build Cache     0         0         0B        0B</code></pre>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ดูทรัพยกรใน Docker Machine</strong></h2>
+<p><strong>docker stats </strong></p>
+<pre><code>docker stats</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>docker stats 
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O     BLOCK I/O       PIDS
+058fd52e2200   mysql5_7   0.02%     178.1MiB / 974.1MiB   18.29%    906B / 0B   11MB / 26.3MB   27</code></pre>
+<h2 is-upgraded><strong>คำสั่งที่ใช้ลบ Docker Objects ใน Docker Machine</strong></h2>
+<p><strong>docker system prune</strong></p>
+<p>จะเป็น Interactive ถามตอบ  [y/N]  โดยจะลบตามนี้</p>
+<ul>
+<li>   all stopped containers</li>
+<li>   all networks not used by at least one container</li>
+<li>   all dangling images</li>
+<li>   all dangling build cache</li>
+</ul>
+<p>โดยเราสามารถใส่ -f เพื่อ  bypass the prompt.</p>
+<p>ส่วนใหญ่จะเป็น images,network  ที่ไม่ได้ใช้งาน รวมถึง cache ของระบบในภาพรวมคือการจัดการทรัพยากรให้เกิดประโยชน์สูงสุด</p>
+<pre><code>docker system prune</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker system prune -y
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] </code></pre>
+<aside class="special"><p><strong>เราสามารถเลือกล้างค่า ตาม args ที่กำหนดได้ดังนี้ </strong></p>
+<ul>
+<li>--all , -a                Remove all unused images not just dangling ones</li>
+<li>--filter                API 1.28+</li>
+<li>Provide filter values (e.g. &#39;label=&lt;key&gt;=&lt;value&gt;&#39;)</li>
+<li>--force , -f                Do not prompt for confirmation</li>
+<li>--volumes                Prune volumes</li>
+</ul>
+</aside>
+<p>ตัวอย่างการใช้งาน</p>
+<pre><code>docker system prune -a</code></pre>
+<pre><code>docker system prune --volumes</code></pre>
+<pre><code>docker container prune</code></pre>
+<pre><code>docker container prune --filter &#34;until=12h&#34;</code></pre>
+<pre><code>docker container stop $(docker container ls -aq)</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การเข้าถึงไฟล์ของ Container" duration="2">
+        <p>ก่อนหน้านี้เราได้สร้าง my_Data ขึ้นมา และทำการ inspect ดูพบว่ามี path อยู่ที่ &#34;/var/lib/docker/volumes/my_Data/_data&#34; ของ Host machine </p>
+<p>เราสามารถเข้าถึงที่ไฟล์ที่เก็บอยู่ใน my_Data ได้โดย</p>
+<aside class="special"><p><strong>กรณี  Linux ? </strong></p>
+<ul>
+<li>sudo ls /var/lib/docker/volumes/my_Data/_data/</li>
+<li>โดยที่ my_Data เป็นชื่อ volume , การนำไปใช้ให้เปลี่ยนเป็นชื่อ volume นั้นๆ</li>
+</ul>
+</aside>
+<aside class="special"><p><strong>กรณี Windows ? </strong></p>
+<ul>
+<li>เข้าถึงได้จากพิมพ์ path ตามด้านล่างนี้ลงในช่อง explorer</li>
+</ul>
+</aside>
+<p>\\wsl$\docker-desktop-data\version-pack-data\community\docker\volumes</p>
+<p class="image-container"><img style="width: 624.00px" src="img\8df90c8b119f54a9.jpeg"></p>
+<p class="image-container"><img style="width: 546.00px" src="img\984166976e53838a.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การสร้าง Docker Image" duration="10">
+        <p>        เราสามารถสร้าง Docker Image ตามที่เราต้องการได้  หลังจากนี้เราจะมาเรียนรู้ขั้นตอนการสร้าง Docker Image เบื้องต้นจะมี 4 ขั้นตอนดังนี้</p>
+<ol type="1" start="1">
+<li>Create a file name Dockerfile</li>
+<li>Add instructions in Dockerfile</li>
+<li>Build dockerfile to create image</li>
+<li>Run image to create container</li>
+</ol>
+<p>และมีคำสั่งที่เกี่ยวข้องกับขั้นตอนทั้ง 4 ดังนี้</p>
+<pre><code>docker build </code></pre>
+<pre><code>docker build -t ImageName:Tag directoryOfDockerfile</code></pre>
+<pre><code>docker run image</code></pre>
+<h2 is-upgraded><strong>Step 1 : Create a file name Dockerfile</strong></h2>
+<p>Dockerfile คือหัวใจสำคัญของ Docker โดยเป็นการบ่งบอกให้ Docker ทราบว่า Service หรือ Application ที่ต้องการทำเป็น Docker Image นั้น มีต้นตอ (Base Image) มาจากต้นฉบับอะไร ? </p>
+<p>เริ่มกันเลย</p>
+<p>ก่อนอื่นต้องมี VSCode ในเครื่อง โดยให้ Download ได้ที่ <a href="https://code.visualstudio.com/download" target="_blank">https://code.visualstudio.com/download</a> เสร็จแล้วให้ทำการติดตั้งให้เรียบร้อย   แล้วติดตั้ง Extension เพิ่ม โดยให้ Search หา Extension ด้วยคำว่า Docker จะพบตามรูปนี้</p>
+<p class="image-container"><img style="width: 624.00px" src="img\2f335a5537b2586e.jpeg"></p>
+<p>ตัวอย่างการใช้งาน</p>
+<p class="image-container"><img style="width: 624.00px" src="img\90d582b9efd9631d.jpeg"></p>
+<p>ทดลองสร้าง Dockerfile ได้เลย  ทำการ new file</p>
+<h2 is-upgraded><strong>Step 2 : Add instructions in Dockerfile</strong></h2>
+<p><strong>ตัวอย่างที่ 1: Python</strong></p>
+<pre><code># Dockerfile
+FROM python:3.7.2-alpine3.8
+
+COPY . /app
+ENTRYPOINT [&#34;python&#34;,&#34;app/hello.py&#34;,&#34;my_var&#34;]</code></pre>
+<p><strong>โครงสร้าง Directory </strong></p>
+<p class="image-container"><img style="width: 173.00px" src="img\2b94a84a8ea90cbb.jpeg"></p>
+<p><strong>สรุป</strong></p>
+<ul>
+<li>เป็นการใช้ Base Image สำหรับภาษา python version 3.7.x โดยเป็น image ประเภท alpine</li>
+<li>คำสั่ง COPY คือ การคัดลอกไฟล์ ในที่นี่ใช้ .(dot) เพื่ออ้างอิงว่าทุกๆไฟล์ใน working directory นี้จะเข้าคัดลอกไปใส้ใน folder app ของ Image ที่เรากำลังสร้าง</li>
+</ul>
+<pre><code>#hello.py
+print(&#34;Hello, World!&#34;)</code></pre>
+<aside class="special"><p><strong>Idea บันเจิด ? </strong></p>
+<ul>
+<li>ใครถนัดใช้ภาษา python ก็ลองเอาไฟล์ .py ที่เคยเขียนมาลอง ไว้ใน working directory นี้ดู แต่อย่าลืมเปลี่ยน จาก &#34;.app/hello.py&#34; มาเป็น &#34;.app/xxxx.py&#34; นะจ๊ะ</li>
+</ul>
+</aside>
+<aside class="warning"><p><strong>Caution:</strong> ใครทำเสร็จแล้วอย่าเพิ่งใจร้อนนะ รอ Build พร้อมกัน</p>
+</aside>
+<p><strong>ตัวอย่างที่ 2: PHP5 with apache server</strong></p>
+<pre><code># Dockerfile
+FROM php:5-apache-jessie
+
+RUN rm /etc/apt/preferences.d/no-debian-php
+
+RUN apt-get update &amp;&amp;\
+    apt-get install -y \
+    libmcrypt-dev \
+    libpng-dev \
+    zlib1g-dev \
+    zip \
+    unzip &amp;&amp;\
+    a2enmod rewrite
+
+RUN docker-php-ext-install pdo 
+RUN docker-php-ext-install pdo_mysql 
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install gd 
+RUN docker-php-ext-install pcntl  
+RUN docker-php-ext-install mcrypt  
+
+COPY PHP_INI/php.ini /usr/local/etc/php/php.ini
+RUN sed -i ‘s/;date\.timezone.*/date.timezone = ASIA\/Bangkok/g&#39; /usr/local/etc/php/php.ini
+RUN sed -i ‘s/;upload_max_filesize.*/upload_max_filesize = 15M/g&#39; /usr/local/etc/php/php.ini
+RUN sed -i ‘s/;post_max_size.*/post_max_size = 15M/g&#39; /usr/local/etc/php/php.ini
+#RUN a2enmod rewrite
+
+
+WORKDIR /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 775 /var/www/html
+
+COPY ./src /var/www/html/
+
+VOLUME /var/www/html
+</code></pre>
+<p><strong>โครงสร้าง Directory </strong></p>
+<p class="image-container"><img style="width: 250.00px" src="img\b6be0a81a73ee93e.jpeg"></p>
+<p><strong>สรุป</strong></p>
+<ul>
+<li>เป็นการใช้ Base Image สำหรับภาษา php version 5.x โดยเป็น image ที่ใช้ apache ทำหน้าที่เป็น webserver</li>
+<li>คำสั่ง RUN เป็นคำสั่งสำหรับติดตั้ง PHP Extension หรือพวก Software Runtime ภายในเครื่องที่ extension ต่างๆ เรียกใช้งาน</li>
+<li>คำสั่ง COPY คือ การคัดลอกไฟล์ php.ini จาก folder PHP_INI  คัดลอกไปใส้ใน folder /usr/local/etc/php/php.ini  เพื่อกำหนดการเปิดใช้งาน Extension ของ Image ที่เรากำลังสร้าง</li>
+<li>คำสั่ง RUN เป็นคำสั่งสำหรับปรับปรุงวันที่และ timezone รวมถึงกำหนดขนาดไฟล์สูงสุดที่สามารถ upload ได้  </li>
+<li>คำสั่ง WORKDIR เป็นคำสั่งกำหนด Working Directory ของ image</li>
+<li>คำสั่ง RUN เป็นคำสั่งสำหรับกำหนดให้ www-data สามารถอ่านเขียน folder default home directory สำหรับ apache ได้  </li>
+<li>คำสั่ง COPY คือ การคัดลอกไฟล์ ทุกไฟล์ที่อยู่ใน folder src คัดลอกไปใส้ใน folder /var/www/html  ภายใน app ของ Image ที่เรากำลังสร้าง</li>
+<li>คำสั่ง VOLUME คือบ่งบอกว่า สร้าง folder เก็บข้อมูลฐาวรให้ Container</li>
+</ul>
+<aside class="special"><p><strong>Idea บันเจิด ? </strong></p>
+<ul>
+<li>ใครเคยเขียน php มาต้องลองซักหน่อย โดยการนำไฟล์ที่เราเคยสร้างไว้ ในหัวข้อที่ 2 ของ codelab นี้มาใช้ได้เลย ที่เขียนไฟล์ info.php  หรือจะเขียนใหม่เองก็ได้นะ ใช้ code นี้ <code>&lt;?php phpinfo(); ?&gt;</code></li>
+</ul>
+</aside>
+<aside class="warning"><p><strong>Caution:</strong> ใครทำเสร็จแล้วอย่าเพิ่งใจร้อนนะ รอ Build พร้อมกัน</p>
+</aside>
+<p>สรุปคำสั่งหลักๆของ Dockerfile ที่ใช้บ่อยๆ มีดังนี้</p>
+<ul>
+<li><strong>FORM</strong>  กำหนด Base image</li>
+<li><strong>LABEL</strong> กำหนด Metadata เช่น ชื่อ Version หรือเจ้าของ Images</li>
+<li><strong>ENV</strong> กำหนด Environment Variable ภายใน Container</li>
+<li><strong>RUN</strong> สำหรับติดตั้ง Packages ให้ Container</li>
+<li><strong>COPY</strong> สำหรับคัดลอกไฟล์และโฟลเดอร์ไปยัง Container</li>
+<li><strong>ADD</strong> สำหรับคัดลอกไฟล์และโฟลเดอร์ไปยัง Container โดยสามารถแตกไฟล์ .tar รวมถึงคัดลอกไฟล์จาก Host ภายนอกได้</li>
+<li><strong>CMD</strong> สำหรับ RUN คำสั่งที่ต้องการขณะ RUN Container</li>
+<li><strong>WORKDIR</strong> กำหนด Working Directory ของ Container</li>
+<li><strong>ARG</strong> กำหนด Variable ขณะสร้าง Image</li>
+<li><strong>ENTRYPOINT</strong> สำหรับ RUN คำสั่งที่ต้องการขณะ RUN Container</li>
+<li><strong>EXPOSE</strong> กำหนด PORT ที่เปิดให้ Container อื่นที่เชื่อมต่อเข้ามา</li>
+<li><strong>VOLUME</strong> สร้าง folder เก็บข้อมูลฐาวรให้ Container</li>
+</ul>
+<h2 is-upgraded><strong>Step 3</strong> : <strong>Build dockerfile to create image</strong></h2>
+<p>        ในการ Build Dockerfile นั้น Docker จะทำงานสร้าง Image ขึ้นมาทีละ Layer (Read Only Layer) ด้วยคำสั่ง <code>Docker Build</code> ซึ่งแต่ละ Layer ของ Image ก็คล้ายๆ กับการ Commit Version ของ Git และเราจะเรียก Layer แรกของ Images ว่า &#34;Base Image&#34;</p>
+<p>คำสั่งสำหรับการ Build มีรูปแบบดังนี้</p>
+<p><strong>docker build</strong> -t [ImageName]:[Tag] directoryOfDockerfile</p>
+<ul>
+<li>-t  ตามด้วย ImageName:Tag ใช้บ่งบอกว่าการ Build ครั้งนี้ ใช้ชื่อว่าอะไร : tag ที่ remark สำหรับ Image นี้ </li>
+<li>directoryOfDockerfile คือ path ของ Dockerfile ที่ใช้ในการ Build หากไม่ระบุ Docker จะมองหาใน Working Directory ของตาม path ที่ระบุใน Command Prompt</li>
+</ul>
+<p><strong>ตัวอย่าง</strong></p>
+<pre><code>docker build -t mypydev:v1 .</code></pre>
+<aside class="special"><p><strong>TIP </strong></p>
+<ul>
+<li>. (Dot) ใช้อ้างอิง Working Directory ปัจจุบัน</li>
+</ul>
+</aside>
+<p>ผลลัพธ์</p>
+<pre><code>Sending build context to Docker daemon  3.072kB
+Error response from daemon: dockerfile parse error line 2: FROM requires either one or three arguments
+ecpe@ecpe-svr-web:~/docker/Python/python3$ sudo vim Dockerfile 
+ecpe@ecpe-svr-web:~/docker/Python/python3$ docker build -t mypydev:v1 .
+Sending build context to Docker daemon  3.072kB
+Step 1/3 : FROM python:3.7.2-alpine3.8
+3.7.2-alpine3.8: Pulling from library/python
+c87736221ed0: Pull complete 
+c3f51b0d0765: Pull complete 
+debb44f3e46a: Pull complete 
+10993d665bf4: Pull complete 
+ce20b5fbc60e: Pull complete 
+Digest: sha256:6930a0325f40f1e2b501b48b5b122278bc578521e2d6b19aaf82b06222020420
+Status: Downloaded newer image for python:3.7.2-alpine3.8
+ ---&gt; 8e6c527e3c7f
+Step 2/3 : COPY . /app
+ ---&gt; 2be75be95f31
+Step 3/3 : ENTRYPOINT [&#34;python&#34;,&#34;.app/hello.py&#34;,&#34;my_var&#34;]
+ ---&gt; Running in 06a0f6524dfe
+Removing intermediate container 06a0f6524dfe
+ ---&gt; 8d0ef0c3ea7d
+Successfully built 8d0ef0c3ea7d
+Successfully tagged mypydev:v1
+ecpe@ecpe-svr-web:~/docker/Python/python3$ </code></pre>
+<p>ลองดูที่ Docker Images ของเราในเครื่องสิ ว่ามี Images ที่เราเพ่ง Build ตะกี้ หรือยังโดยใช้คำสั่ง</p>
+<pre><code>docker images</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~/docker/Python/python3$ docker images
+REPOSITORY                TAG               IMAGE ID       CREATED         SIZE
+mypydev                   v1                8d0ef0c3ea7d   8 minutes ago   78.6MB
+mysql                     5.7               2c9028880e58   9 days ago      447MB
+mysql                     latest            c0cdc95609f1   9 days ago      556MB
+alpine                    latest            6dbb9cc54074   5 weeks ago     5.61MB
+10.27.65.210/icesit2015   latest            e0dd7f140ca5   4 months ago    406MB
+php5/icesit2015           latest            e0dd7f140ca5   4 months ago    406MB
+python                    3.7.2-alpine3.8   8e6c527e3c7f   2 years ago     78.6MB
+php                       5-apache-jessie   d34f09f63596   2 years ago     374MB</code></pre>
+<p>ลองอีก</p>
+<p><strong>ตัวอย่างการ Build อ้างอิง Path</strong></p>
+<aside class="special"><p><strong>กรณี  Linux ? </strong></p>
+<ul>
+<li>สมมุติว่า Working Directory ใน Terminal เราอยู่ที่  /home/ecpe/docker</li>
+</ul>
+</aside>
+<pre><code>docker build -t myphp5:v1 /home/ecpe/docker/docker-php-5</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~/docker$ docker build -t myphp5:v1 /home/ecpe/docker/docker-php-5/
+Sending build context to Docker daemon  5.632kB
+Step 1/18 : FROM php:5-apache-jessie
+ ---&gt; d34f09f63596
+Step 2/18 : RUN rm /etc/apt/preferences.d/no-debian-php
+ ---&gt; Using cache
+ ---&gt; 06a17456de73
+Step 3/18 : RUN apt-get update &amp;&amp;    apt-get install -y     libmcrypt-dev     libpng-dev     zlib1g-dev     zip     unzip &amp;&amp;    a2enmod rewrite
+ ---&gt; Using cache
+ ---&gt; e917920cf666
+Step 4/18 : RUN docker-php-ext-install pdo
+ ---&gt; Using cache
+ ---&gt; aa589503855d
+Step 5/18 : RUN docker-php-ext-install pdo_mysql
+ ---&gt; Using cache
+ ---&gt; 7dff64173f66
+Step 6/18 : RUN docker-php-ext-install zip
+ ---&gt; Using cache
+ ---&gt; 546e6cd40b3d
+Step 7/18 : RUN docker-php-ext-install gd
+ ---&gt; Using cache
+ ---&gt; bac40a562485
+Step 8/18 : RUN docker-php-ext-install pcntl
+ ---&gt; Using cache
+ ---&gt; efeb60bdd585
+Step 9/18 : RUN docker-php-ext-install mcrypt
+ ---&gt; Using cache
+ ---&gt; 1d960b6636f4
+Step 10/18 : COPY PHP_INI/php.ini /usr/local/etc/php/php.ini
+ ---&gt; Using cache
+ ---&gt; b9580ece6f85
+Step 11/18 : RUN sed -i &#39;s/;date\.timezone.*/date.timezone = ASIA\/Bangkok/g&#39; /usr/local/etc/php/php.ini
+ ---&gt; Running in 0a60e72ae20a
+Removing intermediate container 0a60e72ae20a
+ ---&gt; c86a1efe9611
+Step 12/18 : RUN sed -i &#39;s/;upload_max_filesize.*/upload_max_filesize = 15M/g&#39; /usr/local/etc/php/php.ini
+ ---&gt; Running in 1cacddc7c139
+Removing intermediate container 1cacddc7c139
+ ---&gt; 884cc2a4e131
+Step 13/18 : RUN sed -i &#39;s/;post_max_size.*/post_max_size = 15M/g&#39; /usr/local/etc/php/php.ini
+ ---&gt; Running in 2a5aaf9d5a2b
+Removing intermediate container 2a5aaf9d5a2b
+ ---&gt; 7e1beece1307
+Step 14/18 : WORKDIR /var/www/html
+ ---&gt; Running in 17e0ed28b00c
+Removing intermediate container 17e0ed28b00c
+ ---&gt; 5648922bf2f0
+Step 15/18 : RUN chown -R www-data:www-data /var/www/html
+ ---&gt; Running in 3074fdbaf72e
+Removing intermediate container 3074fdbaf72e
+ ---&gt; 9bcf8c476da9
+Step 16/18 : RUN chmod -R 775 /var/www/html
+ ---&gt; Running in 67881e534c08
+Removing intermediate container 67881e534c08
+ ---&gt; 918c369bbc6f
+Step 17/18 : COPY ./src /var/www/html/
+ ---&gt; f7627c47bc60
+Step 18/18 : VOLUME /var/www/html
+ ---&gt; Running in c21b6e482798
+Removing intermediate container c21b6e482798
+ ---&gt; b8188fac5776
+Successfully built b8188fac5776
+Successfully tagged myphp5:v1
+ecpe@ecpe-svr-web:~/docker$ 
+</code></pre>
+<p>มาลองพิจารณาขนาดของ Image ที่เพิ่ง Build กัน โดยใช้คำสั่ง</p>
+<pre><code>docker images</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~/docker$ docker images
+REPOSITORY                TAG               IMAGE ID       CREATED             SIZE
+myphp5                    v1                b8188fac5776   21 minutes ago      390MB
+mypydev                   v1                8d0ef0c3ea7d   About an hour ago   78.6MB</code></pre>
+<aside class="special"><p><strong>กรณี Windows ? </strong></p>
+<ul>
+<li>สมมุติว่า Working Directory ใน Terminal เราอยู่ที่ C:\Users\admin</li>
+</ul>
+</aside>
+<pre><code>docker build -t myphp5:v1 d:\Docker\docker-php-5</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>C:\Users\admin&gt;docker build -t myphp5:v1 d:\Docker\docker-php-5
+[+] Building 285.9s (23/23) FINISHED
+ =&gt; [internal] load build definition from Dockerfile                                                               1.4s
+ =&gt; =&gt; transferring dockerfile: 960B                                                                               0.0s
+ =&gt; [internal] load .dockerignore                                                                                  1.6s
+ =&gt; =&gt; transferring context: 2B                                                                                    0.2s
+ =&gt; [internal] load metadata for docker.io/library/php:5-apache-jessie                                             7.4s
+ =&gt; [auth] library/php:pull token for registry-1.docker.io                                                         0.0s
+ =&gt; [ 1/17] FROM docker.io/library/php:5-apache-jessie@sha256:5a43f74ce996a32c46bdb9c9893c1c21928f1ce53d67934cf0  37.8s
+ =&gt; =&gt; resolve docker.io/library/php:5-apache-jessie@sha256:5a43f74ce996a32c46bdb9c9893c1c21928f1ce53d67934cf0cb7  0.0s
+ =&gt; =&gt; sha256:5a43f74ce996a32c46bdb9c9893c1c21928f1ce53d67934cf0cb7559415ba648 1.41kB / 1.41kB                     0.0s
+ =&gt; =&gt; sha256:b9766e25326378ff9a1e2e37c4dc112f758f8d136469ce851aa4add42c62612a 3.03kB / 3.03kB                     0.0s
+ =&gt; =&gt; sha256:d34f09f63596c046eaea659d081bc54e8a068ea5a684131d8352a339e3210d7a 12.45kB / 12.45kB                   0.0s
+ =&gt; =&gt; sha256:8ac9f5ca4429ff58493e4cb486b7a5eaa6af0a4711e9bda1ce4671732e25d1d1 54.39MB / 54.39MB                  10.9s
+ =&gt; =&gt; sha256:de39282d8eae9f5c94405ff99328e0808308a958741e8e20d0e589b8fb648ff9 227B / 227B                         1.7s
+ =&gt; =&gt; sha256:84baf42db9bdc42bb1d1909f341f8e27399b8f8ffbf40edb964c07357e17b72d 74.74MB / 74.74MB                  13.1s
+ =&gt; =&gt; sha256:2911e185987ac72f783890c65e821eb3096385529ec75397bab086d98a6c8505 182B / 182B                         2.5s
+ =&gt; =&gt; sha256:be476b47437fcc073f6df6ac92c8cfa8748a743c2ce1e9dfc59f4d898c6868ac 4.47MB / 4.47MB                     4.3s
+ =&gt; =&gt; sha256:3f77c160c9cf9011978ece77d4cabe897d8cf22a6796a7f5832f7fe624305718 1.34kB / 1.34kB                     5.2s
+ =&gt; =&gt; sha256:2f45a1e2e8842ff9f7c2b2e63c329eac8183123530863343a64cd2d5bb4969e2 436B / 436B                         6.0s
+ =&gt; =&gt; sha256:24e7399dcad7fbd6de24ce3514fb0d66075a4322fa054c1ce792d03edab8f715 489B / 489B                         6.7s
+ =&gt; =&gt; sha256:4673e04b34da1726274e0e6dbdeabda195f34ce9ba0558808b801749b6a7dfee 12.82MB / 12.82MB                  11.6s
+ =&gt; =&gt; sha256:3ad6f578d935c652ed4f0b9e7331d4bcf1e459a7156343731e81f971082c17b2 500B / 500B                        13.2s
+ =&gt; =&gt; extracting sha256:8ac9f5ca4429ff58493e4cb486b7a5eaa6af0a4711e9bda1ce4671732e25d1d1                          4.7s
+ =&gt; =&gt; sha256:dff721c13d668c406ed756d953db635f792db151e16d42875c88ba5bc62cbe2d 905B / 905B                        13.9s
+ =&gt; =&gt; sha256:94e85359614dd9f6984c617bd10ab7985ae0c32abc2876d8dbd4131b2c1cf79f 9.77MB / 9.77MB                    15.1s
+ =&gt; =&gt; sha256:a259a9dd5021af924246c37c1570c2327b7bd3692b323d8ce8affcff6227b55e 2.20kB / 2.20kB                    14.6s
+ =&gt; =&gt; extracting sha256:de39282d8eae9f5c94405ff99328e0808308a958741e8e20d0e589b8fb648ff9                          0.0s
+ =&gt; =&gt; extracting sha256:84baf42db9bdc42bb1d1909f341f8e27399b8f8ffbf40edb964c07357e17b72d                          3.4s
+ =&gt; =&gt; extracting sha256:2911e185987ac72f783890c65e821eb3096385529ec75397bab086d98a6c8505                          0.0s
+ =&gt; =&gt; extracting sha256:be476b47437fcc073f6df6ac92c8cfa8748a743c2ce1e9dfc59f4d898c6868ac                          0.3s
+ =&gt; =&gt; extracting sha256:3f77c160c9cf9011978ece77d4cabe897d8cf22a6796a7f5832f7fe624305718                          0.0s
+ =&gt; =&gt; extracting sha256:2f45a1e2e8842ff9f7c2b2e63c329eac8183123530863343a64cd2d5bb4969e2                          0.0s
+ =&gt; =&gt; extracting sha256:24e7399dcad7fbd6de24ce3514fb0d66075a4322fa054c1ce792d03edab8f715                          0.0s
+ =&gt; =&gt; extracting sha256:4673e04b34da1726274e0e6dbdeabda195f34ce9ba0558808b801749b6a7dfee                          0.1s
+ =&gt; =&gt; extracting sha256:3ad6f578d935c652ed4f0b9e7331d4bcf1e459a7156343731e81f971082c17b2                          0.0s
+ =&gt; =&gt; extracting sha256:94e85359614dd9f6984c617bd10ab7985ae0c32abc2876d8dbd4131b2c1cf79f                          0.5s
+ =&gt; =&gt; extracting sha256:a259a9dd5021af924246c37c1570c2327b7bd3692b323d8ce8affcff6227b55e                          0.0s
+ =&gt; =&gt; extracting sha256:dff721c13d668c406ed756d953db635f792db151e16d42875c88ba5bc62cbe2d                          0.0s
+ =&gt; [internal] load build context                                                                                  1.0s
+ =&gt; =&gt; transferring context: 261B                                                                                  0.1s
+ =&gt; [ 2/17] RUN rm /etc/apt/preferences.d/no-debian-php                                                            9.5s
+ =&gt; [ 3/17] RUN apt-get update &amp;&amp;    apt-get install -y     libmcrypt-dev     libpng-dev     zlib1g-dev     zip  112.2s
+ =&gt; [ 4/17] RUN docker-php-ext-install pdo                                                                        12.1s
+ =&gt; [ 5/17] RUN docker-php-ext-install pdo_mysql                                                                   8.5s
+ =&gt; [ 6/17] RUN docker-php-ext-install zip                                                                        26.9s
+ =&gt; [ 7/17] RUN docker-php-ext-install gd                                                                         20.2s
+ =&gt; [ 8/17] RUN docker-php-ext-install pcntl                                                                       9.2s
+ =&gt; [ 9/17] RUN docker-php-ext-install mcrypt                                                                      8.9s
+ =&gt; [10/17] COPY PHP_INI/php.ini /usr/local/etc/php/php.ini                                                        1.5s
+ =&gt; [11/17] RUN sed -i &#39;s/;date\.timezone.*/date.timezone = ASIA\/Bangkok/g&#39; /usr/local/etc/php/php.ini            2.1s
+ =&gt; [12/17] RUN sed -i &#39;s/;upload_max_filesize.*/upload_max_filesize = 15M/g&#39; /usr/local/etc/php/php.ini           2.2s
+ =&gt; [13/17] RUN sed -i &#39;s/;post_max_size.*/post_max_size = 15M/g&#39; /usr/local/etc/php/php.ini                       2.8s
+ =&gt; [14/17] WORKDIR /var/www/html                                                                                  2.1s
+ =&gt; [15/17] RUN chown -R www-data:www-data /var/www/html                                                           2.3s
+ =&gt; [16/17] RUN chmod -R 775 /var/www/html                                                                         2.2s
+ =&gt; [17/17] COPY ./src /var/www/html/                                                                              1.5s
+ =&gt; exporting to image                                                                                            12.3s
+ =&gt; =&gt; exporting layers                                                                                           11.2s
+ =&gt; =&gt; writing image sha256:d8958fbf80b97770aded5fffa42c6f40bcf1ab9eefc0df2aae88f0c52bc389a1                       0.1s
+ =&gt; =&gt; naming to docker.io/library/myphp5:v1                                                                       0.1s</code></pre>
+<aside class="warning"><p><strong>Question</strong> ทำไมขนาดของ Image ที่เรา Build ใน php5 นั้นมีขนาดใหญ่จัง ?</p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>อยู่ที่ Base Image หาก Base Image เค้า Custom มาดี ขนาดก็จะเล็กมาก เช่นพวกตระกูล alpine</li>
+<li>อยู่ที่จำนวนคำสั่งใน Dockerfile เช่น หากใน 1 Dockerfile มีคำสั่ง RUN  และคำสั่งอื่นๆ หากมีจำนวนมาก ก็จะเพิ่ม Layer ทับถมกันไปเรื่อยๆ และมีขนาดใหญ่</li>
+</ul>
+</aside>
+<aside class="warning"><p><strong>Question</strong> อยากให้ขนาดของ Docker Image มีขนาดเล็กๆ ต้องทำไง?</p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>หาก Image เราจำเป็นต้องประมวลผลคำสั่งจำนวนมาก ให้นำมาต่อบรรทัดกันโดยใช้ \ เช่น</li>
+</ul>
+</aside>
+<pre><code># Dockerfile
+.
+.
+RUN apt-get update &amp;&amp; apt-get install -y \
+    libzip-dev \
+    zlib1g-dev  \
+    libmcrypt-dev\
+    php5-mcrypt\
+    php5-gd\
+    php5-mysql\
+    php5-common
+
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install \
+    fileinfo \
+    mysql\
+    mysqli \
+    pdo\
+    pdo_mysql \
+    mbstring \
+    mcrypt
+.
+.
+.</code></pre>
+<h2 is-upgraded><strong>Step 4 : Run image to create container</strong></h2>
+<p>ทดลอง RUN ได้เลย เริ่มจากฝั่ง php ก่อนละกัน</p>
+<p>ตัวอย่าง    </p>
+<pre><code>docker run -p 8080:80 --rm -d --name php5-app myphp5:v1</code></pre>
+<p>ผลลัพธ์ จากการใช้คำสั่ง <code>docker container ps</code> ภายหลังการ run </p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker container ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                  NAMES
+2972a74daeb6   myphp5:v1   &#34;docker-php-entrypoi...&#34;   17 seconds ago   Up 15 seconds   0.0.0.0:8080-&gt;80/tcp   php5-app</code></pre>
+<p>เข้าถึงได้จาก <a href="http://localhost:8080/info.php" target="_blank">http://localhost:8080/info.php</a> ซึ่งผลควรจะเป็นแบบนี้</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c0c16885b898de5c.jpeg"></p>
+<p>ต่อมา ฝั่ง python</p>
+<p> ตัวอย่าง    </p>
+<pre><code>docker run --rm --name pyApp3-app mypydev:v1</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>ecpe@ecpe-svr-web:~/docker$ docker run -it --rm --name pyApp3-app mypydev:v1
+Hello, World!</code></pre>
+<p>ผลลัพธ์ จากการใช้คำสั่ง <code>docker ps</code> ภายหลังการ run </p>
+<pre><code>ecpe@ecpe-svr-web:~$ docker container ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                  NAMES
+2972a74daeb6   myphp5:v1   &#34;docker-php-entrypoi...&#34;   17 seconds ago   Up 15 seconds   0.0.0.0:8080-&gt;80/tcp   php5-app</code></pre>
+<aside class="warning"><p><strong>Question</strong> ทำไมหลังจากที่เรา RUN แล้ว pyApp3-app ไม่มีชื่อปรากฏ อยู่ใน List ของ Container?</p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>คำสั่ง RUN มีการระบุ --rm และตัว Images ที่เป็นโปรแกรมภาษา Python นั้นทำงานโดยการ Printout ออกมา และ terminate ตัวเองออกมา</li>
+</ul>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="การ Pull &amp; PUSH" duration="0">
+        <p>ก่อนหน้านี้เราเรียนรู้ถึงการทำ Image จากการเขียน Dockerfile แล้ว สิ่งที่เราได้คือจะต้องรู้ว่า Base Image นั้นมาจากไหน ? คำตอบคือ มาจาก Docker Hub </p>
+<p>คำสั่งในการดึง Image เพื่อมาเก็บลงใน Docker Machine ของเราคือ</p>
+<p><strong>docker pull  </strong>[ names of image:TAG] </p>
+<ul>
+<li>names of image คือ ชื่อของ image ใน dockerhub</li>
+</ul>
+<pre><code>docker pull phpmyadmin/phpmyadmin</code></pre>
+<aside class="warning"><p><strong>Caution:</strong> ก่อนจะ push ต้อง tag ก่อนทุกครั้ง</p>
+</aside>
+<p>คำสั่งในการ tag เพื่อติด label และระบุที่จัดเก็บหรือ REPOSITORY นั้น คือ</p>
+<p><strong>docker tag</strong> [names of image:tag] [REPOSITORY/names of image:tag]</p>
+<ul>
+<li>names of image:tag คือ ชื่อของ image :tag ใน docker machine</li>
+<li>REPOSITORY คือเครื่องที่จัดเก็บ หรือหากจัดเก็บใน dockerhub จะใช้เป็น docker id แทน</li>
+</ul>
+<p>ตัวอย่างกรณีจัดเก็บใน dockerhub</p>
+<pre><code>docker tag myphp5:v1 kantinanm/myphp5:v1</code></pre>
+<p>ตัวอย่างกรณีจัดเก็บใน docker private repository ในที่นี้คือ engdockerhubs.com</p>
+<pre><code>docker tag myphp5:v1 engdockerhubs.com/myphp5:v1</code></pre>
+<p>ตัวอย่างกรณีจัดเก็บใน docker private repository ในที่นี้คือ 10.27.65.210</p>
+<pre><code>docker tag myphp5:v1 10.27.65.210/myphp5:v1</code></pre>
+<p>คำสั่งในการจัดเก็บ Image ของเราที่ได้จากการ Build ขึ้นไปเก็บที่ dockerhub คือ</p>
+<p><strong>docker push  </strong>[ names of REPOSITORY/names of image:TAG] </p>
+<ul>
+<li>names of  REPOSITORY กรณีใช้ DockerHub คือ id ของเรา </li>
+<li>names of image:TAG : คือชื่อ images และ TAG ของ image ที่เรา Build ใน docker machine</li>
+</ul>
+<pre><code>docker push kantinanm/myphp5:v1</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>docker push kantinanm/myphp5:v1
+The push refers to repository [docker.io/kantinanm/myphp5]
+4f84894f007b: Pushing [==================================================&gt;]  3.584kB
+2eaa4aae7385: Pushing  3.072kB
+38d9d55c193b: Pushing  3.072kB
+5f70bf18a086: Pushed
+bbede22ec676: Pushing [============
+.
+.
+.
+.
+.
+.
+.
+</code></pre>
+<p>เย้..............สำเร็จ</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c87e38fc4c03dd12.jpeg"></p>
+<p>ลองดูรายละเอียดตามมาตรฐานเลย มี PUSH ก็ต้องมี PULL</p>
+<p class="image-container"><img style="width: 624.00px" src="img\30a3488670be6899.jpeg"></p>
+<p>..........จบ.........</p>
+<aside class="warning"><p><strong>Question</strong> อยากจะ push ไปยัง docker private repository ต้องทำไง?</p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>ต้อง logout ออกจาก dockerhub ใน command prompt ก่อน. ไปดูกันเลย....</li>
+</ul>
+</aside>
+<p>คำสั่งใน logout เพื่อสลับไป ยัง docker private repository คือ</p>
+<p><strong>docker logout </strong></p>
+<pre><code>docker logout</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>Removing login credentials for https://index.docker.io/v1/</code></pre>
+<p>คำสั่งใน login ที่ docker private repository อื่นๆ คือ</p>
+<p><strong>docker login</strong> [ip or domain_name]</p>
+<ul>
+<li>ip or domain_name คือชื่อโดเมนเนมหรือ ip เครื่อง </li>
+</ul>
+<pre><code>docker login https://10.27.65.210</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>Authenticating with existing credentials...
+Login Succeeded</code></pre>
+<p>ลอง PUSH ดูซะหน่อยมั้ย ?</p>
+<p><strong>แต่...เด๋วก่อน</strong> ต้องดูว่ามี Image ที่โดน Tag แล้วหรือยัง</p>
+<pre><code>docker images
+REPOSITORY                 TAG       IMAGE ID       CREATED        SIZE
+myphp5                     v1        d8958fbf80b9   18 hours ago   390MB
+engdockerhubs.com/myphp5   v1        d8958fbf80b9   18 hours ago   390MB
+10.27.65.210/myphp5        v1        d8958fbf80b9   18 hours ago   390MB
+kantinanm/myphp5           v1        d8958fbf80b9   18 hours ago   390MB
+mysql                      5.7       2c9028880e58   10 days ago    447MB
+alpine                     latest    6dbb9cc54074   5 weeks ago    5.61MB
+nginx                      latest    62d49f9bab67   5 weeks ago    133MB</code></pre>
+<p>เมื่อสะบายใจแล้วก็ PUSH ได้เลย</p>
+<pre><code>docker push 10.27.65.210/myphp5:v1</code></pre>
+<p>ผลลัพธ์</p>
+<p class="image-container"><img style="width: 523.50px" src="img\dc1fb03b3135d38e.jpeg"></p>
+<p>หรือลองอีกที ถ้ายังไม่พอใจ</p>
+<pre><code>docker login https://engdockerhubs.com</code></pre>
+<p>และลอง PUSH ดูซะหน่อยมั้ย ?</p>
+<pre><code>docker push engdockerhubs.com/myphp5:v1
+The push refers to repository [engdockerhubs.com/myphp5]
+4f84894f007b: Pushed
+2eaa4aae7385: Pushed
+38d9d55c193b: Pushed
+5f70bf18a086: Pushed
+bbede22ec676: Pushed
+60819c5c9d1c: Pushed
+adfe8ad67b6f: Pushed
+489545af112d: Pushed
+ef2c849f43ad: Pushed
+15016b726148: Pushed
+a148e83f4e24: Pushed
+0f28334c44b4: Pushed
+79d5678028cf: Pushed
+6636070b81f4: Pushed
+53502c6960ae: Pushed
+9f669956dd90: Pushed
+89f068914afe: Pushed
+b314a3fbe0ca: Pushed
+524ec255f0a7: Pushed
+5b166a13b9a8: Pushed
+321ccc1f7cdd: Pushed
+93dfe1133184: Pushed
+e7d91aebb1bf: Pushed
+ed4e4d2048d8: Pushed
+f4fa21fdc77e: Pushed
+6e801a71b354: Pushed
+37866ad038e2: Pushed
+c95b0032b534: Pushed
+0af75f18b2dd: Pushed
+v1: digest: sha256:dd2efb84677d5812ee3282e4c6e00f059bf4829028a770c8f359f9ac23ca6789 size: 6363</code></pre>
+<p>...........โอเคพอได้ละ...........</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ปลุกไฟในตัวคุณ" duration="1">
+        <p>        หลังจากทุกคนเริ่มเห็นภาพกันแล้วเราจะมาลอง ประยุกต์กัน ในตัวอย่างนี้จะมาลอง Build App ที่มาจาก NodeJS มาเป็นในรูปแบบ Software Container กัน</p>
+<p class="image-container"><img style="width: 624.00px" src="img\6f5edf561e677de0.png"></p>
+<h2 is-upgraded><strong>System architecture</strong></h2>
+<p>        ในครั้งนี้เพื่อให้เห็นภาพ เราจะใช้ NodeJS เป็น Engine ในระบบของเราที่คอยให้บริการแบบ REST API เพื่ออ่านเขียนข้อมูลจากฐานข้อมูล MySQL  หลายคนอาจจะงงว่า Visual Studio Code ใช้สร้าง Request แบบ Browser ได้ด้วยหรอ คำตอบที่ได้คือได้เหมือนกัน  โดยตัวอย่างนี้เรายกให้ VS Code เป็นพระเอกสำหรับสายเดิฟ Minimal  แบบเราๆ </p>
+<p><strong>Step 1.</strong> ก่อนอื่นไปที่ VS Code แล้วมองหา Extension ที่ชื่อว่า REST Client แล้วกด Install</p>
+<p class="image-container"><img style="width: 593.50px" src="img\768ad94d5fcc16ab.jpeg"></p>
+<p><strong>Step 2.</strong> สร้าง Directory Docker จากนั้นเปิด CMD เพื่อไปที่ root path ของ  Docker</p>
+<p>ตัวอย่าง</p>
+<pre><code>D:\Docker&gt;</code></pre>
+<p class="image-container"><img style="width: 233.00px" src="img\cc52ccdc0c50f8ef.jpeg"></p>
+<p><strong>Step 3.</strong> ไป Clone Project นี้มา <a href="https://github.com/kantinanm/rest-api-demo" target="_blank">https://github.com/kantinanm/rest-api-demo</a>  ตามนี้ </p>
+<pre><code>git clone https://github.com/kantinanm/rest-api-demo.git</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>D:\Docker&gt;git clone https://github.com/kantinanm/rest-api-demo.git
+Cloning into &#39;rest-api-demo&#39;...
+remote: Enumerating objects: 67, done.
+remote: Counting objects: 100% (67/67), done.
+remote: Compressing objects: 100% (43/43), done.
+remote: Total 67 (delta 24), reused 57 (delta 14), pack-reused 0
+Unpacking objects: 100% (67/67), done.</code></pre>
+<p><strong>Step 4.</strong> จาก Step ที่ 3  ขยับที่เข้าไปที่ rest-api-demo  โดยการพิมพ์ <code>cd rest-api-demo</code> </p>
+<p>ผลลัพธ์</p>
+<pre><code>D:\Docker&gt;cd rest-api-demo
+
+D:\Docker\rest-api-demo&gt;</code></pre>
+<p><strong>Step 5.</strong> สร้างไฟล์ .env ขึ้นมา กรณี windows ให้ใช้ <code>copy .env.example .env</code> , หากเป็น linux ใช้คำสั่งนี้ <code>cp .env.example .env</code></p>
+<pre><code>D:\Docker\rest-api-demo&gt;copy .env.example .env
+        1 file(s) copied.</code></pre>
+<p><strong>Step 6.</strong> แก้ไขไฟล์ .env ตามนี้  พร้อมกับ save</p>
+<pre><code>#express server config
+
+PORT=3000
+HOST=localhost
+HOST_URL=http://localhost:3000
+
+#mysql database config
+
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=1234
+MYSQL_DATABASE=restdemo
+</code></pre>
+<p><strong>Step 7.</strong> สร้าง Dockerfile ที่ root project (rest-api-demo)</p>
+<pre><code># Dockerfile
+FROM node:15-alpine
+WORKDIR /app
+
+COPY . .
+
+RUN npm install --no-optional
+
+EXPOSE 3000
+CMD [ &#34;node&#34;, &#34;app.js&#34; ]</code></pre>
+<p><strong>Step 8.</strong> Build Docker Image </p>
+<pre><code>docker build -t restful-node-app:v1 .</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>D:\Docker\rest-api-demo&gt;docker build -t restful-node-app:v1 .
+[+] Building 48.5s (9/9) FINISHED
+ =&gt; [internal] load build definition from Dockerfile                                                               0.6s
+ =&gt; =&gt; transferring dockerfile: 162B                                                                               0.0s
+ =&gt; [internal] load .dockerignore                                                                                  0.7s
+ =&gt; =&gt; transferring context: 2B                                                                                    0.0s
+ =&gt; [internal] load metadata for docker.io/library/node:15-alpine                                                  3.2s
+ =&gt; [1/4] FROM docker.io/library/node:15-alpine@sha256:3ca0132180509b9fd68545b2232dd9fc01726c06fc36b772389d41b82d  0.0s
+ =&gt; [internal] load build context                                                                                  0.6s
+ =&gt; =&gt; transferring context: 69.14kB                                                                               0.1s
+ =&gt; CACHED [2/4] WORKDIR /app                                                                                      0.0s
+ =&gt; [3/4] COPY . .                                                                                                 1.4s
+ =&gt; [4/4] RUN npm install --no-optional                                                                           35.8s
+ =&gt; exporting to image                                                                                             5.6s
+ =&gt; =&gt; exporting layers                                                                                            5.2s
+ =&gt; =&gt; writing image sha256:2f03c407e150e45d9ff0279454e0363fd9e1d1547efaf08854d06a315dcf1002                       0.1s
+ =&gt; =&gt; naming to docker.io/library/restful-node-app:v1                                                             0.1s</code></pre>
+<p>จากนั้น <code>docker image ls</code></p>
+<p>ผลลัพท์</p>
+<pre><code>D:\Docker\rest-api-demo&gt;docker image ls
+REPOSITORY                 TAG       IMAGE ID       CREATED          SIZE
+restful-node-app           v1        2f03c407e150   13 minutes ago   188MB
+10.27.65.210/myphp5        v1        d8958fbf80b9   24 hours ago     390MB
+kantinanm/myphp5           v1        d8958fbf80b9   24 hours ago     390MB
+myphp5                     v1        d8958fbf80b9   24 hours ago     390MB
+engdockerhubs.com/myphp5   v1        d8958fbf80b9   24 hours ago     390MB
+mysql                      5.7       2c9028880e58   11 days ago      447MB
+alpine                     latest    6dbb9cc54074   5 weeks ago      5.61MB
+nginx                      latest    62d49f9bab67   5 weeks ago      133MB</code></pre>
+<p><strong>Step 9.</strong> Run Docker Image </p>
+<pre><code>docker run -p 3000:3000 --name nodeapp --rm restful-node-app:v1</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>C:\Users\kantinanm&gt;docker run -p 3000:3000 --name nodeapp --rm restful-node-app:v1
+Node App is running on  port: 3000</code></pre>
+<p>ลองทดสอบโดยการเข้า <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>  ถ้าทุกอย่างยัง Ok อยู่จะเป็นแบบนี้</p>
+<p class="image-container"><img style="width: 567.50px" src="img\f5df6b6f35f93864.jpeg"></p>
+<h2 is-upgraded><strong>ถึงเวลาทดสอบเชื่อมต่อกับ mysql</strong></h2>
+<aside class="warning"><p><strong>จำกันได้มั้ย !! :</strong> ก่อนหน้านี้เราได้มีการสร้างฐานข้อมูล restdemo และนำเข้า sql ไปแล้วในหัวข้อที่  3 เรื่อง การ SSH bash เข้าไปที่จัดการคำสั่งใน Container  และเราได้สั่ง Run Docker Image ฐานข้อมูล mysql 5.7 ใน container ที่ชื่อว่า mysqlRestDemo  </p>
+</aside>
+<p>ลองเช็คดูก่อนว่ามี mysqlRestDemo อยู่ใน Container เรามั้ย ? ด้วยการพิมพ์  docker ps -a </p>
+<p>ผลลัพธ์</p>
+<pre><code>D:\Docker\rest-api-demo&gt;docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED          STATUS                     PORTS                    NAMES
+5138c193dba0   restful-node-app:v1   &#34;docker-entrypoint.s...&#34;   28 minutes ago   Up 28 minutes              0.0.0.0:3000-&gt;3000/tcp   nodeapp
+852e5c1d8ba8   mysql:5.7             &#34;docker-entrypoint.s...&#34;   40 hours ago     Exited (0) 39 hours ago                             mysqlRestDemo</code></pre>
+<p>ถ้ามีอยู่แล้วก็ สั่ง start</p>
+<pre><code>docker start mysqlRestDemo</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>D:\Docker\rest-api-demo&gt;docker start mysqlRestDemo
+mysqlRestDemo</code></pre>
+<p>ตรวจสอบผลการ start โดยพิมพ์คำสั่ง <code>docker ps</code></p>
+<pre><code>D:\Docker\rest-api-demo&gt;docker ps
+CONTAINER ID   IMAGE                 COMMAND                  CREATED          STATUS              PORTS                               NAMES
+5138c193dba0   restful-node-app:v1   &#34;docker-entrypoint.s...&#34;   39 minutes ago   Up 39 minutes       0.0.0.0:3000-&gt;3000/tcp              nodeapp
+852e5c1d8ba8   mysql:5.7             &#34;docker-entrypoint.s...&#34;   40 hours ago     Up About a minute   0.0.0.0:3306-&gt;3306/tcp, 33060/tcp   mysqlRestDemo</code></pre>
+<p>ทดสอบการเรียก api ง่ายๆ ดูที่ <a href="http://localhost:3000/api/student" target="_blank">http://localhost:3000/api/student </a></p>
+<p>ผลลัพธ์</p>
+<p class="image-container"><img style="width: 561.00px" src="img\9219437ae485d57f.jpeg"></p>
+<p>หรือเปิด VS Code ยิง Request ไปดู</p>
+<p class="image-container"><img style="width: 624.00px" src="img\7b69e91eaa0c88aa.jpeg"></p>
+<p>แหกจ้า แหก.....</p>
+<aside class="warning"><p><strong>Question</strong> ทำไมจึงเป็นเช่นนั้น ?</p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>กลับไปดูที่ .env</li>
+</ul>
+</aside>
+<pre><code>#express server config
+
+PORT=3000
+HOST=localhost
+HOST_URL=http://localhost:3000
+
+#mysql database config
+
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=1234
+MYSQL_DATABASE=restdemo
+</code></pre>
+<aside class="warning"><p><strong>Question</strong> : <code>MYSQL_HOST=localhost</code> กับ <code>HOST=localhost ก็เป็น localhost เหมือนกัน คือ 127.0.01 เหมือนๆ กัน ทำไมมันมองไม่เห็นกันรึไง </code></p>
+</aside>
+<aside class="special"><p><strong>Answer  </strong></p>
+<ul>
+<li>แน่นอน. แต่ละ Container จะเป็นการแยกทรัพยากรกันชัดเจน </li>
+</ul>
+</aside>
+<p>จะแก้ปัญหานี้อย่างไรดี?  ก่อนอื่นต้องตรวจสอบสาเหตุก่อน ว่า ทั้ง 2 Container มีวงเครือข่ายอะไรที่สามารถใช้เชื่อมต่อกันได้มั้ย ?</p>
+<pre><code>docker network ls</code></pre>
+<p>ผลลัพธ์</p>
+<pre><code>NETWORK ID     NAME      DRIVER    SCOPE
+61d04df9212e   bridge    bridge    local
+a30b2571059d   host      host      local
+e7908f309d68   none      null      local</code></pre>
+<p>ลอง inspect ดูดิ</p>
+<pre><code>docker network inspect 61d04df9212e</code></pre>
+<p>ผลลัพธ์</p>
+<p><code>อ่อมันเป็นอย่างนี้นี่เอง</code></p>
+<pre><code>D:\restful-node-app\rest-api-demo&gt;docker network inspect 61d04df9212e
+[
+    {
+        &#34;Name&#34;: &#34;bridge&#34;,
+        &#34;Id&#34;: &#34;61d04df9212ee79584966feb6b9d97ac01d1d26bb4b4ad84f7c158045cfe060f&#34;,
+        &#34;Created&#34;: &#34;2021-05-20T02:31:58.2275678Z&#34;,
+        &#34;Scope&#34;: &#34;local&#34;,
+        &#34;Driver&#34;: &#34;bridge&#34;,
+        &#34;EnableIPv6&#34;: false,
+        &#34;IPAM&#34;: {
+            &#34;Driver&#34;: &#34;default&#34;,
+            &#34;Options&#34;: null,
+            &#34;Config&#34;: [
+                {
+                    &#34;Subnet&#34;: &#34;172.17.0.0/16&#34;,
+                    &#34;Gateway&#34;: &#34;172.17.0.1&#34;
+                }
+            ]
+        },
+        &#34;Internal&#34;: false,
+        &#34;Attachable&#34;: false,
+        &#34;Ingress&#34;: false,
+        &#34;ConfigFrom&#34;: {
+            &#34;Network&#34;: &#34;&#34;
+        },
+        &#34;ConfigOnly&#34;: false,
+        &#34;Containers&#34;: {
+            &#34;5138c193dba01b510965f878f113a4c760293354e41db8105fa3095d0a239a21&#34;: {
+                &#34;Name&#34;: &#34;nodeapp&#34;,
+                &#34;EndpointID&#34;: &#34;4e533c8e013f8c82e26cac5a8652bd3e61357ffaaeed59a41a00feaf02f89b87&#34;,
+                &#34;MacAddress&#34;: &#34;02:42:ac:11:00:02&#34;,
+                &#34;IPv4Address&#34;: &#34;172.17.0.2/16&#34;,
+                &#34;IPv6Address&#34;: &#34;&#34;
+            },
+            &#34;852e5c1d8ba8331596c759dc64bea405eae0322e5580fb92702cb42fd65ab09d&#34;: {
+                &#34;Name&#34;: &#34;mysqlRestDemo&#34;,
+                &#34;EndpointID&#34;: &#34;03ed140c279c1812c2a57ad8506156a15a3acba98d6e8e479e52892117eb3a50&#34;,
+                &#34;MacAddress&#34;: &#34;02:42:ac:11:00:03&#34;,
+                &#34;IPv4Address&#34;: &#34;172.17.0.3/16&#34;,
+                &#34;IPv6Address&#34;: &#34;&#34;
+            }
+        },
+        &#34;Options&#34;: {
+            &#34;com.docker.network.bridge.default_bridge&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.enable_icc&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.enable_ip_masquerade&#34;: &#34;true&#34;,
+            &#34;com.docker.network.bridge.host_binding_ipv4&#34;: &#34;0.0.0.0&#34;,
+            &#34;com.docker.network.bridge.name&#34;: &#34;docker0&#34;,
+            &#34;com.docker.network.driver.mtu&#34;: &#34;1500&#34;
+        },
+        &#34;Labels&#34;: {}
+    }
+]</code></pre>
+<h2 is-upgraded><strong>สรุป </strong></h2>
+<ul>
+<li>nodeapp ได้รับ ip 172.17.0.2/16</li>
+<li>mysqlRestDemo ได้รับ ip 172.17.0.3/16</li>
+</ul>
+<p>ถึงแม้ว่าเราสามารถเข้าถึงได้จากเครื่อง Docker Machine จาก port ที่ expose ออกมาให้ แต่หากต้องการ ทำให้ทั้ง 2 Container เชื่อมต่อกันภายในได้ โดยไม่ต้องมานั่ง set พวก IP Network  ต้องใช้ Solution อื่น นั่นคือ Docker Compose </p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Docker Compose" duration="10">
+        <p>Multi-stage Build เป็นการ Pack รวม Service ที่เกี่ยวข้องและใช้ใน Project เข้าไว้ด้วยกันโดยที่ Define Metadata ไว้ที่ไฟล์ extenstion .yml ตัวอย่าง </p>
+<pre><code>#docker-compose.yml
+version: &#34;3&#34;
+
+services:
+  php:
+    container_name: lemp_php
+    build: php/
+    restart: unless-stopped
+    volumes:
+      - ./src/:/var/www/html
+    depends_on:
+      - db
+    links:
+      - db
+
+  nginx:
+    container_name: lemp_nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    volumes:
+      - ./src/:/var/www/html
+      - ./nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - db
+    ports:
+      - &#34;80:80&#34;
+
+  db:
+    container_name: db
+    image: mariadb:latest
+    restart: unless-stopped
+    volumes:
+      - ./mariadb/initdb/:/docker-entrypoint-initdb.d
+      - ./mariadb/data/:/var/lib/mysql/
+    environment:
+      - MYSQL_ROOT_PASSWORD=masterdocker
+      - MYSQL_DATABASE=wp-docker
+      - MYSQL_USER=devops
+      - MYSQL_PASSWORD=masterdocker
+      - MYSQL_ROOT_HOST=%
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    container_name: pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    volumes:
+      - /session
+    restart: always
+    ports:
+      - 8080:80
+
+networks:
+  default:
+    external:
+      name: web_network
+
+</code></pre>
+<p><a href="https://bit.ly/3hJll0h" target="_blank">Download</a> ตัวอย่างได้เลย</p>
+<p>โครงสร้าง Directory</p>
+<p class="image-container"><img style="width: 402.00px" src="img\6aa1d062849852ff.jpeg"></p>
+<pre><code># Dockerfile 
+# php
+FROM php:5.4-fpm
+
+
+RUN apt-get update &amp;&amp; apt-get install -y \
+    libzip-dev \
+    zlib1g-dev  \
+    libmcrypt-dev\
+    php5-mcrypt\
+    php5-gd\
+    php5-mysql\
+    php5-common
+
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install \
+    fileinfo \
+    mysql\
+    mysqli \
+    pdo\
+    pdo_mysql \
+    mbstring \
+    mcrypt
+
+
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 775 /var/www/html
+
+VOLUME /var/www/html
+EXPOSE 9000
+CMD [&#34;php-fpm&#34;]</code></pre>
+<h2 is-upgraded><strong>คำสั่งที่เกี่ยวข้อง</strong></h2>
+<p>ก่อนอื่นถ้าจะ run compose ไฟล์ด้านบน ต้องสร้าง network ขึ้นมาก่อน</p>
+<pre><code>docker network create web_network</code></pre>
+<p>สั่งให้ Service ภายในไฟล์  docker-compose.yml ที่การระบุ path ของ Dockerfile ทำการ build </p>
+<pre><code>docker-compose build</code></pre>
+<p>สั่งให้ build และเริ่มการทำงาน แบบ background process</p>
+<pre><code>docker-compose up -d --build</code></pre>
+<ul>
+<li>--build ถ้าเจอการแก้ไข จะตรวจสอบการแก้ไข หากเจอ จะทำการ rebuild containner ให้</li>
+</ul>
+<p>สั่งให้หยุดแบบทั้ง stack โดยยังมีอยู่ใน  container </p>
+<pre><code>docker-compose stop</code></pre>
+<p>บังคับให้หยุดแบบทั้ง stack และลบ container ทิ้งทั้ง stack</p>
+<pre><code>docker-compose down --rmi all</code></pre>
+<p>เรียกดู container ที่รันอยู่ทั้งหมด ที่ docker-compose.yml ดูแล</p>
+<pre><code>docker-compose ps</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="สรุปคำสั่ง Basic Commands" duration="1">
+        <p>รวมคำสั่งพื้นฐานต่างๆที่ใช้</p>
+<h2 is-upgraded><strong>Basic</strong></h2>
+<ul>
+<li>docker version</li>
+<li>docker -v</li>
+<li>docker info</li>
+<li>Docker --help</li>
+<li>docker login</li>
+</ul>
+<h2 is-upgraded><strong>Images</strong></h2>
+<ul>
+<li>docker images</li>
+<li>docker pull</li>
+<li>docker rmi</li>
+</ul>
+<h2 is-upgraded><strong>Containers</strong></h2>
+<ul>
+<li>docker ps</li>
+<li>docker run</li>
+<li>docker start</li>
+<li>docker stop</li>
+</ul>
+<h2 is-upgraded><strong>System</strong></h2>
+<ul>
+<li>docker stats</li>
+<li>docker system df</li>
+<li>docker system prune</li>
+</ul>
+<h2 is-upgraded><strong>Compose</strong></h2>
+<ul>
+<li>docker-compose build</li>
+<li>docker-compose up -d --build</li>
+<li>docker-compose stop</li>
+<li>docker-compose down --rmi all</li>
+<li>docker-compose ps</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="References" duration="1">
+        <p><a href="https://semaphoreci.com/community/tutorials/dockerizing-a-php-application" target="_blank">https://semaphoreci.com/community/tutorials/dockerizing-a-php-application</a></p>
+<p><a href="https://dev.mysql.com/doc/mysql-installation-excerpt/5.6/en/docker-mysql-getting-started.html" target="_blank">https://dev.mysql.com/doc/mysql-installation-excerpt/5.6/en/docker-mysql-getting-started.html</a></p>
+<p><a href="https://igokuz.com/docker-command-%E0%B9%80%E0%B8%9A%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%95%E0%B9%89%E0%B8%99-101-df1a7fb2a24c" target="_blank">https://igokuz.com/docker-command-%E0%B9%80%E0%B8%9A%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%95%E0%B9%89%E0%B8%99-101-df1a7fb2a24c</a></p>
+<p><a href="https://www.somkiat.cc/docker-for-java-developer/" target="_blank">https://www.somkiat.cc/docker-for-java-developer/</a></p>
+<p><a href="https://arnondora.in.th/whats-docker/" target="_blank">https://arnondora.in.th/whats-docker/</a></p>
+<p><a href="https://www.docker.com/sites/default/files/d8/2019-09/docker-cheat-sheet.pdf" target="_blank">https://www.docker.com/sites/default/files/d8/2019-09/docker-cheat-sheet.pdf</a></p>
+<p><a href="https://design.jboss.org/redhatdeveloper/marketing/docker_cheatsheet/cheatsheet/images/docker_cheatsheet_r3v2.pdf" target="_blank">https://design.jboss.org/redhatdeveloper/marketing/docker_cheatsheet/cheatsheet/images/docker_cheatsheet_r3v2.pdf</a></p>
+<p><a href="https://bunyiam.com/php5-6-32-apache-jessie/" target="_blank">https://bunyiam.com/php5-6-32-apache-jessie/</a></p>
+<p><a href="https://linuxize.com/post/how-to-remove-docker-images-containers-volumes-and-networks/" target="_blank">https://linuxize.com/post/how-to-remove-docker-images-containers-volumes-and-networks/</a></p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

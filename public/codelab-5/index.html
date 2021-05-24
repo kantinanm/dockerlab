@@ -1,0 +1,198 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Codelab 5 - Pipeline</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="codelab-5-pipeline"
+                  title="Codelab 5 - Pipeline"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Simple Pipeline Project" duration="3">
+        <p>        ตัวอย่างนี้เราจะสอนการสร้าง Pipeline ง่ายๆ เพื่อให้เข้าใจรูปแบบการเขียน script pipeline </p>
+<p>ตัวอย่าง Pipeline ใน Project นี้ </p>
+<pre><code>pipeline {
+    agent any 
+    stages {
+    // comment here 
+        stage(&#39;Build&#39;) {
+         steps{
+             script {
+                echo &#34;&#39;Build&#39;&#34;
+             }
+          }
+        }
+        stage(&#39;Test&#39;) {
+         steps{
+             script {
+                echo &#34;&#39;Test&#39;&#34;
+             }
+          }
+        }
+        stage(&#39;Run&#39;) {
+         steps{
+             script {
+                echo &#34;&#39;Run&#39;&#34;
+             }
+          }
+        }
+    }
+}</code></pre>
+<p><strong>Step 1</strong>. สร้าง Project ขึ้นมาชื่อว่า simple_pipeline โดยเลือก Template เป็น Pipeline </p>
+<p class="image-container"><img style="width: 624.00px" src="img\578c422d4770bda4.jpeg"></p>
+<p><strong>Step 2</strong>. คัดลอกตัวอย่าง Code Pipeline ด้านบนไปใส่ในช่อง Pipeline Definition และกด Save</p>
+<p><strong>Step 3</strong>. ลอง Build ได้เลย</p>
+<p class="image-container"><img style="width: 624.00px" src="img\222fbdd59f703105.jpeg"></p>
+<p><strong>Step 4</strong>. รอดูผลลัพท์ในการ RUN ที่ Stage View</p>
+<p class="image-container"><img style="width: 624.00px" src="img\1d8267b9e03d99e5.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Advance Pipeline Project" duration="20">
+        <p class="image-container"><img style="width: 624.00px" src="img\ad733a80c27f7919.png"></p>
+<p><strong>Pre-requistes:</strong></p>
+<p>1. Jenkins is up and running</p>
+<p>2. Docker installed on Jenkins instance and configured.</p>
+<p>3. Docker plug-in installed in Jenkins</p>
+<p>4. port 8081 is opened up in firewall rules.</p>
+<p>ตัวอย่างนี้จะเป็นการประยุกต์ความรู้ที่ได้เรียนมาทั้งหมด โดยจะใช้ Jenkins ทำกระบวนการ Automation  โดยการสร้าง Pipeline ขึ้นมาและกำหนดขั้นตอนดังนี้</p>
+<ol type="1" start="1">
+<li>Checkout และ Clone Repo ที่กำหนด</li>
+<li>ทำการ Build Image จาก Dockerfile ที่อยู่ใน Project ที่ Clone มา</li>
+<li>สั่งให้ Push Docker Image ขึ้นไปยัง DockerHub</li>
+<li>ดำเนินการสั่ง Stop และ Remove Container ที่เป็นตัวเดียวกับที่ Build ใน Step 2</li>
+<li>สั่ง RUN Image ใหม่ที่ Build ใน Step 2 เพื่อสร้างและให้ทำงานเป็น Container</li>
+</ol>
+<p>โดยมีตัวอย่าง Pipeline Script ดังนี้</p>
+<pre><code>pipeline {
+    agent any 
+    environment {
+        //once you sign up for Docker hub, use that user_id here
+        registry = &#34;dockerid/image_name&#34;
+        //- update your credentials ID after creating credentials for connecting to Docker Hub
+        registryCredential = &#39;your_id_Credential_fordocker&#39;
+        dockerImage = &#39;&#39;
+    }
+    stages {
+    // Running Docker container, make sure port 8081 is opened in 
+        stage(&#39;Initial&#39;) {
+         steps{
+             script {
+                echo &#34;Initial&#34;
+             }
+          }
+        }
+        stage(&#39;Clone&#39;) {
+         steps{
+            checkout([$class: &#39;GitSCM&#39;, branches: [[name: &#39;*/main&#39;]], extensions: [], userRemoteConfigs: [[credentialsId: &#39;your_id_Credential_forgithub&#39;, url: &#39;https://github.com/xxxxxxxx/dockerapp.git&#39;]]])
+          }
+        }
+        
+        // Building Docker images
+        stage(&#39;Building image&#39;) {
+          steps{
+            script {
+              dockerImage = docker.build registry
+            }
+          }
+        }
+        
+             // Uploading Docker images into Docker Hub
+    stage(&#39;Upload Image&#39;) {
+     steps{    
+         script {
+            docker.withRegistry( &#39;&#39;, registryCredential ) {
+            dockerImage.push()
+            }
+        }
+      }
+    }
+    
+     // Stopping Docker containers for cleaner Docker run
+     stage(&#39;docker stop container&#39;) {
+         steps {
+            sh &#39;docker ps -f name=yourNameApp -q | xargs --no-run-if-empty docker container stop&#39;
+            sh &#39;docker container ls -a -fname=yourNameApp -q | xargs -r docker container rm&#39;
+         }
+       }
+    
+    // Running Docker container, make sure port 8081 is opened in 
+    stage(&#39;Docker Run&#39;) {
+     steps{
+         script {
+            dockerImage.run(&#34;-p 8081:80 --rm --name yourNameApp&#34;)
+         }
+      }
+    }
+    }
+}
+</code></pre>
+<p><strong>Step 1</strong>. สร้าง Project ขึ้นมาชื่อว่า simple_pipeline โดยเลือก Template เป็น Pipeline </p>
+<p><strong>Step 2</strong>. คัดลอกตัวอย่าง Code Pipeline ด้านบนแล้วนำไปแก้ไข โดยที่</p>
+<aside class="warning"><p><strong>แก้ไข Pipeline !!: </strong></p>
+<ul>
+<li>dockerid/image_name  คือ dockerid และ images ของเราที่เคย push ไว้บน DockerHub</li>
+<li>your_id_Credential_fordocker ,ให้กลับไปดูเรื่องการ Gen Script Pipeline จาก Codelab 4</li>
+<li>your_id_Credential_forgithub ,ให้กลับไปดูเรื่องการ Gen Script Pipeline จาก Codelab 4</li>
+<li><a href="https://github.com/xxxxxxxx/dockerapp.git" target="_blank">https://github.com/xxxxxxxx/dockerapp.git</a> แก้ไข url ที่ต้องการ Clone มาให้ถูกต้อง</li>
+<li>yourNameApp ชื่อ Container </li>
+</ul>
+</aside>
+<p><strong>Step 3</strong>. แก้ไขแล้วให้นำไปใส่ในช่อง Pipeline Definition </p>
+<p><strong>Step 4</strong>. ที่ช่อง Build Triggers ให้ ระบุ เป็น H/15 * * * *</p>
+<p class="image-container"><img style="width: 398.00px" src="img\f5573a7de3072fcd.jpeg"></p>
+<p><strong>Step 5</strong>. ลอง Build ได้เลย , ผลลัพธ์ที่ดีควรจะเป็นแบบนี้  แต่อาจจะรอนานหน่อย</p>
+<p class="image-container"><img style="width: 624.00px" src="img\29d1c1a3cf3a5032.jpeg"></p>
+<p><strong>Step 6</strong>. รอ Step 5 เสร็จก่อน จากนั้นลองเข้า URL นี้ ดู <a href="http://10.27.65.100:8081/" target="_blank">http://localhost:8081/</a></p>
+<p class="image-container"><img style="width: 375.00px" src="img\427b46c809555bad.jpeg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="แบบสอบถาม" duration="1">
+        <p>ท้ายนี้ก่อนจากกันไปฝากทำแบบสอบถามด้วยจ้า <a href="https://bit.ly/3bSROgV" target="_blank">https://bit.ly/3bSROgV</a></p>
+<p>----------------------------------------------------- จบบริบูรณ์--------------------------------------------------</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="References" duration="1">
+        <ul>
+<li>Krief, M. (2019). Learning DevOps. Birmingham, Packt Publishing Ltd.: 215-232.</li>
+<li><a href="https://www.coachdevops.com/2020/05/automate-docker-builds-using-jenkins.html" target="_blank">https://www.coachdevops.com/2020/05/automate-docker-builds-using-jenkins.html</a></li>
+<li><a href="https://www.coachdevops.com/2021/04/how-to-enable-webhooks-for-multibranch.html" target="_blank">https://www.coachdevops.com/2021/04/how-to-enable-webhooks-for-multibranch.html</a></li>
+</ul>
+<p>.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

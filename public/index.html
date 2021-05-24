@@ -1,89 +1,245 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+
+<head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Application development and deployment using Software containers</title>
+    <!-- FAVICON LINK -->
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png">
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/bootstrap.min.css">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/8.3.2/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/8.3.2/firebase-auth.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-database.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-firestore.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-functions.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-storage.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-analytics.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-remote-config.js"></script>
-    <script defer src="/__/firebase/8.3.2/firebase-performance.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <!-- FONT AWESOME LINK -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/font-awesome/css/font-awesome.min.css">
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <!-- IMAGE OVERLAY STYLE LINK  -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/overlay/style.css">
+    <!-- LIGHTBOX STYLE LINK -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/lightbox/ekko-style.css">
+
+    <!-- CAROUSEL STYLE LINK  -->
+    <link rel="stylesheet" type="text/css" href="css/vendor/owl-carousel/owl.carousel.css">
+    <link rel="stylesheet" type="text/css" href="css/vendor/owl-carousel/owl.theme.css">
+    <link rel="stylesheet" type="text/css" href="css/vendor/owl-carousel/carousel.css">
+ <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" type="text/css" href="css/custom/style_blue.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+</head>
+
+<body data-spy="scroll" data-target=".navbar-fixed-top" data-offset="75">
+   
+    <!--================================= NAVIGATION START =============================================-->
+    <nav class="navbar navbar-default navbar-fixed-top menu-bg" id="top-nav">
+        <div class="container">
+            <div class="navigation-tb">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div>
+                        <a href="#"> <img src="images/logo.png" alt="logo" />
+                        </a>
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right no-margin" id="menu-list">
+                        <li class="menu-fs menu-underline"><a href="#home" class="pagescroll">home</a>
+                        </li>
+                        <li class="menu-fs menu-underline"><a href="#services" class="pagescroll">Codelab</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!--================================= NAVIGATION END =============================================-->
+
+     <!--================================= HEADER-FORM-WITH-IMAGE-1 START =============================================-->
+    <div class="container-fluid header-form-image-bgimage-1 bgimage-property parallax  header-space-image-form" id="home">
+        <div class="container">
+            <div class="col-md-10 column-center no-padding white-text res-width-full">
+                <div class="row">
+                    <div class="col-md-6 col-md-push-6 res-header-heading-bottom">
+                        <div class="contact-div header-contact-form header-contact-bg">
+                            
+                        </div>
+                        <div class="center">
+                            <img src="images/MatCode.png" alt="image" class="img-responsive image-center" />
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6 col-md-pull-6">
+                        <div class="center">
+                            <img src="images/BoyCode.png" alt="image" class="img-responsive image-center" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <!--================================= HEADER-FORM-WITH-IMAGE-1 END =============================================-->
+<section class="container-fluid section-space section-bg-2">
+        <div class="container">
+            <div class="row res-text-center-1">
+                <div class="col-md-3 col-sm-6 common-res-bottom">
+                    <div class="center res-image-bottom-1">
+                        <img src="images/GettyImages-1161702497.jpg" alt="image" class="img-responsive image-center image-grow" />
+                    </div>
+                </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+                <div class="col-md-6 col-sm-6 common-res-bottom common-res-bottom-1">
+                    <h2 class="left h2-bottom">การพัฒนาและการติดตั้งแอพพลิเคชั่นโดยใช้ซอฟต์แวร์คอนเทนเนอร์ </h2>
+                    <p class="left p-bottom"> ซอฟต์แวร์คอนเทนเนอร์ในปัจจุบันถูกใช้งานอย่างแพร่หลาย และ Docker คือซอฟต์แวร์คอนเทนเนอร์ที่มีตัวจัดการและได้รับความนิยมอย่างต่อเนื่อง   </p>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+                    <p class="left">ในการอบรมครั้งนี้ผู้เข้าร่วมจะเข้าใจถึง วิถีหรือแนวทางการพัฒนาซอฟต์แวร์แบบ Continuous Integration & Continuous Deployment : (CI/CD) ตั้งแต่แรกเริ่มของการพัฒนาจนถึงการติดตั้ง  นำเสนอผ่าน Docker เริ่มจากการจัดทำ Docker Image ,การจัดแอพพลิเคชั่นให้อยู่ในรูปแบบสถาปัตยกรรมซอฟต์แวร์คอนเทนเนอร์ การใช้งานซอฟต์แวร์ที่ใช้ควบคุมเวอร์ชั่นซอสโค้ด ร่วมกับระบบ Automation และดำเนินการติดตั้งผ่านซอฟต์แวร์ Jenkins (CI/CD Server)</p>
+
+                </div>
+
+                <div class="col-md-1 col-sm-1 res-clear">
+                    <div class="center res-image-bottom-1">
+                        <img src="images/profile.png" alt="image" class="img-responsive image-center image-grow" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--================================= OUR SERVICES START =============================================-->
+    <section class="container-fluid section-space section-bg-1" id="services">
+        <div class="container">
+            <h1 class="center">Codelab</h1>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+                    <div class="services-icon">
+                        <img src="images/DevOps64.png" alt="icon" />
+                    </div>
+                    <div class="services-pad services-bottom">
+                        <h3 class="left h3-bottom"><a href="/codelab-1">DevOps, CI/CD </a></h3>
+                        <p class="left">แนวคิดของ DevOps, CI/CD </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+                    <div class="services-icon">
+                        <img src="images/git_64.png" alt="icon" />
+                    </div>
+                    <div class="services-pad services-bottom">
+                        <h3 class="left h3-bottom"><a href="/codelab-2"> Git </a></h3>
+                        <p class="left">พื้นฐานการใช้งาน  Git</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+                    <div class="services-icon">
+                        <img src="images/Docker64.png" alt="icon" />
+                    </div>
+                    <div class="services-pad services-bottom">
+                        <h3 class="left h3-bottom"><a href="/codelab-3">Docker </a></h3>
+                        <p class="left">การใช้งาน Docker เบื้องต้น</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+                    <div class="services-icon">
+                        <img src="images/jenkins_icon.png" alt="icon" />
+                    </div>
+                    <div class="services-pad res-services-bottom services-res-bottom">
+                        <h3 class="left h3-bottom"><a href="/codelab-4">Jenkins</a></h3>
+                        <p class="left">การติดตั้ง Jenkins </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+                    <div class="services-icon">
+                        <img src="images/jenkins_icon.png" alt="icon" />
+                    </div>
+                    <div class="services-pad services-res-bottom">
+                        <h3 class="left h3-bottom"><a href="/codelab-5">Pipeline </a></h3>
+                        <p class="left">Jenkins Pipeline </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-xs-6 common-full">
+<!--                    <div class="services-icon">
+                        <img src="images/64x64x6.png" alt="icon" />
+                    </div>
+                    <div class="services-pad">
+                        <h3 class="left h3-bottom"><a href="#">Q&A </a></h3>
+                        <p class="left">สรุปเนื้อหา </p>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================================= OUR SERVICES END =============================================-->
+
+    <!--================================= OUR ENVIRONMENT START 
+
+    <!--================================= FOOTER START =============================================-->
+    <section class="container-fluid footer-section-space footer-bg">
+        <div class="container white-text">
+            <p class="center ls">&copy; 2021, ภาควิชาวิศวกรรมไฟฟ้าและคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยนเรศวร All Rights Reserved</p>
+        </div>
+    </section>
+    <!--================================= FOOTER END =============================================-->
+    <!-- JQUERY LIBRARY -->
+    <script type="text/javascript" src="js/vendor/jquery.min.js"></script>
+    <!-- BOOTSTRAP -->
+    <script type="text/javascript" src="js/vendor/bootstrap.min.js"></script>
+
+    <!-- SUBSCRIBE MAILCHIMP -->
+    <script type="text/javascript" src="js/vendor/subscribe/subscribe_validate.js"></script>
+
+    <!-- VALIDATION  -->
+    <script type="text/javascript" src="js/vendor/validate/jquery.validate.min.js"></script>
+
+
+    <!-- SLIDER JS FILES -->
+    <script type="text/javascript" src="js/vendor/slider/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="js/vendor/slider/carousel.js"></script>
+
+    <!-- SUBSCRIBE MAILCHIMP -->
+    <script type="text/javascript" src="js/vendor/subscribe/subscribe_validate.js"></script>
+
+    <!-- IMAGE OVERLAY JS FILE -->
+    <script type="text/javascript" src="js/vendor/img-overlay/modernizr.js"></script>
+    <script type="text/javascript" src="js/vendor/img-overlay/overlay.js"></script>
+    <!-- LIGHT BOX GALLERY -->
+    <script type="text/javascript" src="js/vendor/lightbox/ekko-lightbox.js"></script>
+    <script type="text/javascript" src="js/vendor/lightbox/lightbox.js"></script>
+
+    <!-- VIDEO -->
+    <script type="text/javascript" src="js/vendor/video/video.js"></script>
+
+    <!-- COUNTER JS FILES -->
+    <script type="text/javascript" src="js/vendor/counter/counter-lib.js"></script>
+    <script type="text/javascript" src="js/vendor/counter/jquery.counterup.min.js"></script>
+
+    <!-- PHONE_NUMBER VALIDATION JS -->
+    <script type="text/javascript" src="js/vendor/phone_number/phone_number.js"></script>
+
+
+    <!-- THEME JS -->
+    <script type="text/javascript" src="js/custom/custom.js"></script>
+
+</body>
+
 </html>

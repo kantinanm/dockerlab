@@ -3,15 +3,15 @@
   "format": "html",
   "prefix": "https://storage.googleapis.com",
   "mainga": "UA-49880327-14",
-  "updated": "2021-04-08T05:52:02Z",
-  "id": "codelab-1-software-container",
-  "duration": 16,
-  "title": "Codelab 1 - ปฐมบท Software Container",
+  "updated": "2021-05-24T05:02:26Z",
+  "id": "codelab-1-devops-ci-cd",
+  "duration": 28,
+  "title": "Codelab 1 - แนวคิดของ DevOps, CI/CD",
   "summary": "",
   "source": "1sNmjVP7GHaSHgbModX4um50g5OTDFOj9D7a1OzprUq8",
   "theme": "",
   "status": null,
   "category": null,
   "tags": [],
-  "url": "codelab-1-software-container"
+  "url": "codelab-1-devops-ci-cd"
 }
